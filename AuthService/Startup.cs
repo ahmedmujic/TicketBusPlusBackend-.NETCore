@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -31,9 +32,13 @@ namespace AuthService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-            services.AddApplicationServices(Configuration);
             services.AddIdentityServices(Configuration);
+            services.AddApplicationServices(Configuration);
+            services.AddAppVersioning();
+
+            services.AddDbContextPool<AuthenticationDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("IdentityDbContext")));
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

@@ -33,7 +33,7 @@ namespace NotificationService.Services
 
 
             if (isHTML)
-                _mail.Body = new TextPart(TextFormat.Html) { Text = EmailHtml.EmailActivation(body, fullName) };
+                _mail.Body = new TextPart(TextFormat.Html) { Text = EmailHtml.EmailActivation(body) };
             else
                 _mail.Body = new TextPart(TextFormat.Plain) { Text = body };
 

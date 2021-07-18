@@ -27,7 +27,7 @@ namespace AuthService.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult> Register([FromBody]RegistrationDto registration)
+        public async Task<ActionResult> Register([FromBody]UserDto user)
         {
             try
             {

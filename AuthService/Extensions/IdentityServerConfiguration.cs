@@ -4,8 +4,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using AuthService.Constants.Assemblies;
 using AuthService.Models;
 using AuthService.Models.Domain;
+using AuthService.Services;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -18,9 +20,9 @@ namespace AuthService.Extensions
 {
     public static class IdentityServerConfiguration
     {
-        public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config)
+        public static void  AddIdentityServices(this IServiceCollection services, IConfiguration config)
         {
-            string identityConnectionString = config.GetConnectionString("IdentityServerBusDb");
+            string identityConnectionString = config.GetConnectionString("IdentityDbContext");
 
             services.AddIdentity<User, Role>(options =>
             {
@@ -30,7 +32,6 @@ namespace AuthService.Extensions
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireDigit = false;
-                options.Tokens.EmailConfirmationTokenProvider = "EmailDataProtectorTokenProvider";
             })
              .AddEntityFrameworkStores<AuthenticationDbContext>()
              .AddDefaultTokenProviders();
@@ -43,14 +44,14 @@ namespace AuthService.Extensions
                     {
                         options.ConfigureDbContext = db =>
                         db.UseSqlServer(identityConnectionString,
-                            sql => sql.MigrationsAssembly(InternalAssemblies.Database));
+                            sql => sql.MigrationsAssembly(InternalAsseblies.Database));
                     })
                     //Operational Store: tokens, codes etc.
                     .AddOperationalStore(options =>
                     {
                         options.ConfigureDbContext = db =>
                         db.UseSqlServer(identityConnectionString,
-                            sql => sql.MigrationsAssembly(InternalAssemblies.Database));
+                            sql => sql.MigrationsAssembly(InternalAsseblies.Database));
                     })
                     .AddProfileService<IdentityProfileService>(); // custom claims 
 

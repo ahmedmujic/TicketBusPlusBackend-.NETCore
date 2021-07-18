@@ -15,16 +15,14 @@ namespace AuthService.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthService _authService;
         private readonly ITokenService _tokenService;
 
-        public AuthController(IAuthService authService, ITokenService tokenService)
+        public AuthController(ITokenService tokenService)
         {
-            _authService = authService;
             _tokenService = tokenService;
         }
 
-        [HttpPost("authenticate")]
+        /*[HttpPost("authenticate")]
         public async Task<IActionResult> AuthenticateUserAsync(AuthenticationDto authenticationDto)
         {
             try
@@ -67,7 +65,7 @@ namespace AuthService.Controllers
                 return BadRequest("Something went wrong");
             }
         }
-
+        */
         [Authorize(Roles = "Admin")]
         [HttpGet("nesto")]
         public async Task<IActionResult> GetNesto()

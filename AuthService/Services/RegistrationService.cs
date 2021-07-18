@@ -88,5 +88,41 @@ namespace AuthService.Services
             }
 
         }
+
+        public async Task<IdentityResult> Register(UserDto user)
+        {
+            try
+            {
+                User applicationUser = _mapper.Map<UserDto, User>(user);
+                var identityResult = await _userManager.CreateAsync(applicationUser, user.Password).ConfigureAwait(false);
+
+                if (identityResult.Succeeded)
+                {
+                    await _userManager.AddClaimsAsync(applicationUser, new List<Claim>() {
+                        new Claim("email", applicationUser.Email)
+                }).ConfigureAwait(false);
+
+                    await _userManager.AddToRolesAsync(applicationUser, new List<string>() { "Admin" })
+                                      .ConfigureAwait(false); // Define user roles on registration
+
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
+
+                    token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+
+                    var confirmationLink = "http://localhost:4200/userId=" + applicationUser.Id + "&token=" + token;
+
+                    UserRegistered e = new UserRegistered(new Guid(), applicationUser.Id, applicationUser.UserName, applicationUser.Email, confirmationLink);
+
+                    await _messagePublisher.PublishMessageAsync(e.MessageType, e, "");
+                }
+
+                return identityResult;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(RegisterUser));
+                throw;
+            }
+        }
     }
 }

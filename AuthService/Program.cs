@@ -20,7 +20,13 @@ namespace AuthService
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseStartup<Startup>().ConfigureAppConfiguration((hostingContext, configurationBuilder) =>
+                    {
+                        var currentEnv = hostingContext.HostingEnvironment;
+                        configurationBuilder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                                            .AddJsonFile($"appsettings.{currentEnv.EnvironmentName}.json", optional: true)
+                                            .AddEnvironmentVariables();
+                    });
                 });
     }
 }

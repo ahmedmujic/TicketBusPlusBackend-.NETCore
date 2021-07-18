@@ -47,7 +47,7 @@ namespace AuthService.Services
         public async Task<PagedList<UserDto>> GetUsersWithRoles(UserParamsDto userParams)
         {
             //pagination
-             var query = _userManager.Users.
+            /* var query = _userManager.Users.
                  OrderBy(u => u.UserName).
                  Include(r => r.UserRoles).
                  ThenInclude(u => u.Role).
@@ -58,7 +58,7 @@ namespace AuthService.Services
                      Id = u.Id,
                      Roles = u.UserRoles.Select(r => r.Role.Name).ToList()
                  }).AsNoTracking();
-
+            */
             //pagination+filtering
             /* var query = _userManager.Users.
                  OrderBy(u => u.UserName).
@@ -72,7 +72,8 @@ namespace AuthService.Services
                      Roles = u.UserRoles.Select(r => r.Role.Name).ToList()
                  }).AsNoTracking().AsQueryable();*/
 
-            return await PagedList<UserDto>.CreateAsync(query, userParams.PageNumber, userParams.PageSize);
+            // return await PagedList<UserDto>.CreateAsync(query, userParams.PageNumber, userParams.PageSize);
+            return null;
         }
     }
 }

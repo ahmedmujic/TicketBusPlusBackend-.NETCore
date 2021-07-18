@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace AuthService.Extensions
 {
-    public class InitializeIndentityDbExtension
+    public static class InitializeIndentityDbExtension
     {
         public async static Task UseIdentityServerDataAsync(this IApplicationBuilder app, IConfiguration configuration)
         {
@@ -69,7 +69,7 @@ namespace AuthService.Extensions
                 // s (define here which roles application will have)
                 var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
                 if (!roleManager.Roles.Any(r => r.Name.Equals("Admin")))
-                    await roleManager.CreateAsync(new Role("Admin"))
+                    await roleManager.CreateAsync(new Role { Name ="Admin"})
                                      .ConfigureAwait(false);
             }
         }

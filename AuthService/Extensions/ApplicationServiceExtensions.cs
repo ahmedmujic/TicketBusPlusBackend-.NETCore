@@ -23,14 +23,8 @@ namespace AuthService.Extensions
         {
             services.UseRabbitMQMessagePublisher(config);
 
-            services.AddDbContext<AuthenticationDbContext>(options =>
-           {
-               options.UseSqlServer(config.GetConnectionString("AuthenticationDb"));
-           });
-
             services.AddScoped<IRegistrationService, RegistrationService>();
             services.AddScoped<IRegistrationRepository, RegistrationRepository>();
-            services.AddScoped<IAuthService, Services.AuthService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAdminService, AdminService>();
 
