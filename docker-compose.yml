@@ -1,0 +1,60 @@
+version: '3'
+services:
+
+    rabbitmq:
+        image: rabbitmq:3-management-alpine
+        container_name: rabbitmq
+        volumes:
+          - rabbitmqdata:/var/lib/rabbitmq
+        ports:
+          - "15672:15672"
+          - "5672:5672"
+        environment:
+          - RABBITMQ_DEFAULT_USER=rabbitmquser
+          - RABBITMQ_DEFAULT_PASS=DEBmbwkSrzy9D1T9cJfa
+
+    logserver:
+        image: datalust/seq:latest
+        container_name: logserver
+        ports:
+            - "5341:80"
+        environment:
+            - ACCEPT_EULA=Y
+
+    sqlserver:
+        image: microsoft/mssql-server-linux:latest
+        container_name: sqlserver
+        volumes:
+            - sqlserverdata:/var/opt/mssql
+        ports:
+            - "1434:1433"
+        environment:
+            - ACCEPT_EULA=Y
+            - MSSQL_PID=Developer
+            - SA_PASSWORD=8jkGh47hnDw89Haq8LN2
+
+    authservice:
+        image: ticketbusplus/authservice:1.0
+        build: AuthService
+        depends_on:
+            - rabbitmq
+        ports:
+            - "5001:5001"
+            - "5000:5000"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+
+    notificationservice:
+        image: ticketbusplus/notificationservice:1.0
+        build: NotificationService
+        container_name: notificationservice
+        depends_on:
+            - rabbitmq
+        environment:
+            - DOTNET_ENVIRONMENT=Development
+
+volumes:
+    sqlserverdata:
+        external: true
+    rabbitmqdata:
+        external: true
