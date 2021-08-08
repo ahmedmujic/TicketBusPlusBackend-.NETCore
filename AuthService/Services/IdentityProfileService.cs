@@ -36,7 +36,7 @@ namespace AuthService.Services
 
         public Task IsActiveAsync(IsActiveContext context)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(0);
         }
     }
 }

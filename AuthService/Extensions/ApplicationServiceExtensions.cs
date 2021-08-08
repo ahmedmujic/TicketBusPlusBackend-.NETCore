@@ -1,8 +1,6 @@
 ﻿
 using AuthService.Interfaces;
 using AuthService.Models;
-using AuthService.repositories;
-using AuthService.repositories.interfaces;
 using AuthService.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AuthService.Services.Interfaces;
 using Messaging.Configuration;
+using AuthService.Models.Settings;
 
 namespace AuthService.Extensions
 {
@@ -24,12 +23,11 @@ namespace AuthService.Extensions
             services.UseRabbitMQMessagePublisher(config);
 
             services.AddScoped<IRegistrationService, RegistrationService>();
-            services.AddScoped<IRegistrationRepository, RegistrationRepository>();
             services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IAdminService, AdminService>();
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+            services.Configure<EmailSettings>(config.GetSection("EmailSettings"));
             return services;
         }
     }

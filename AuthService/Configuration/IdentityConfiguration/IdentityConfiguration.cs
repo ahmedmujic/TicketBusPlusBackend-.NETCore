@@ -44,7 +44,7 @@ namespace AuthService.Configuration.IdentityConfiguration
             {
                 new Client()
                 {
-                    ClientId = InternalClients.Mobile,
+                    ClientId = InternalClients.Web,
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                     ClientSecrets = { new Secret(Environment.GetEnvironmentVariable("web_client_secret").Sha256()) },
                     AllowedScopes = new List<string>

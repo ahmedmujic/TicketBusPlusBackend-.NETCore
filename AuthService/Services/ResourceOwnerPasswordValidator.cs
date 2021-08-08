@@ -1,4 +1,5 @@
-﻿using AuthService.Models;
+﻿using AuthService.Constants.Errors;
+using AuthService.Models;
 using AuthService.Services.Interfaces;
 using IdentityModel;
 using IdentityServer4.Models;
@@ -36,8 +37,14 @@ namespace AuthService.Services
                         var verificationResult = _identityUserService.VerifyHashedPassword(user, context.Password);
                         if (verificationResult == PasswordVerificationResult.Success)
                         {
+                            if (!user.EmailConfirmed)
+                            {
+                                context.Result = new GrantValidationResult(TokenRequestErrors.InvalidRequest, ErrorDescriptions.AccountNotConfirmed);
+                                return;
+                            }
+
                             List<Claim> userClaims = (await _identityUserService.GetClaimsAsync(user)
-                                                                                .ConfigureAwait(false)).ToList();
+                                                                                    .ConfigureAwait(false)).ToList();
                             //Add role claims for role authorization
                             foreach (var role in await _identityUserService.GetRolesAsync(user).ConfigureAwait(false))
                                 userClaims.Add(new Claim(JwtClaimTypes.Role, role));

@@ -8,92 +8,151 @@ using AuthService.Helpers;
 using AuthService.Models.Dto;
 using AuthService.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using AuthService.Models.Dto.Request;
+using IdentityModel.Client;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using AuthService.Models.Dto.Response;
 
 namespace AuthService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {
+        private readonly ILogger<AuthController> _logger;
         private readonly ITokenService _tokenService;
 
-        public AuthController(ITokenService tokenService)
+        public AuthController(ITokenService tokenService,
+            ILogger<AuthController> logger)
         {
+            _logger = logger;
             _tokenService = tokenService;
         }
 
-        /*[HttpPost("authenticate")]
-        public async Task<IActionResult> AuthenticateUserAsync(AuthenticationDto authenticationDto)
+        [HttpPost("authenticate")]
+        public async Task<IActionResult> AuthenticateUser([FromBody] TokenRequestDTO tokenRequest)
         {
             try
             {
-                var result = await _authService.AuthenticateUserAsync(authenticationDto, HelpersFunctions.GetIpAddress(Request, HttpContext));
+                TokenResponse result = await _tokenService.CreateTokenAsync(tokenRequest).ConfigureAwait(false);
 
                 if (result is null)
-                    return BadRequest("Wrong username or password");
-                HelpersFunctions.SetTokenCookie(result.RefreshToken, Response);
+                    return BadRequest();
 
-                return Ok(result);
+                if (result.IsError)
+                    return BadRequest(IdentityResult.Failed(new IdentityError
+                    {
+                        Code = result.Error,
+                        Description = result.ErrorDescription
+                    }));
+
+                Response.SetTokenCookie(result.RefreshToken);
+
+                return Ok(new TokenResponseDTO { 
+                    ExpiresIn = result.ExpiresIn,
+                    Token = result.AccessToken
+                });
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e);
-                return BadRequest("Something went bad");
+                _logger.LogError(ex, "POST:/token");
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
-        [AllowAnonymous]
-        [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshToken()
+        [HttpPost("token/refresh")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDTO tokenRequest)
         {
             var refreshToken = Request.Cookies["refreshToken"];
             if (refreshToken is null)
                 return BadRequest("Refresh token is not present");
-            try
+            else
+                tokenRequest.RefreshToken = refreshToken;
+             try
             {
-                var response = await _authService.RefreshTokenAsync(refreshToken, HelpersFunctions.GetIpAddress(Request, HttpContext));
-                if (response is null)
-                    return Unauthorized(new { message = "Invalid token" });
+                TokenResponse result = await _tokenService.RefreshTokenAsync(tokenRequest).ConfigureAwait(false);
 
-                HelpersFunctions.SetTokenCookie(refreshToken, Response);
+                if (result.IsError)
+                    return BadRequest(IdentityResult.Failed(new IdentityError
+                    {
+                        Code = result.Error,
+                        Description = result.ErrorDescription
+                    }));
 
-                return Ok(response);
+                Response.SetTokenCookie(result.RefreshToken);
+
+                return Ok(new TokenResponseDTO { 
+                    ExpiresIn= result.ExpiresIn,
+                    Token = result.AccessToken
+                });
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e);
-                return BadRequest("Something went wrong");
+                _logger.LogError(ex, "POST:/refresh");
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
-        */
-        [Authorize(Roles = "Admin")]
-        [HttpGet("nesto")]
-        public async Task<IActionResult> GetNesto()
-        {
-            return Ok("dd");
-        }
 
-        [HttpPost("revoke-token")]
-        public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenRequestDto revokeTokenRequest)
+        [HttpPost("token/revoke")]
+        public async Task<IActionResult> RevokeToken([FromBody] RefreshTokenRequestDTO tokenRequest)
         {
-            var token = revokeTokenRequest.Token ?? Request.Cookies["refreshToken"];
-
-            if (string.IsNullOrEmpty(token))
-                return BadRequest(new {message = "Token is required"});
             try
             {
-                var result = await _tokenService.RevokeToken( token ,HelpersFunctions.GetIpAddress(Request, HttpContext));
+                TokenRevocationResponse result = await _tokenService.RevokeTokenAsync(tokenRequest).ConfigureAwait(false);
 
-                if (!result)
-                    return NotFound("Token not found");
+                if (result.IsError)
+                    return BadRequest(IdentityResult.Failed(new IdentityError { 
+                        Code = result.Error,
+                        Description = null
+                    }));
 
-                return Ok(new {message = "Token revoked"});
-
+                return Ok();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return BadRequest("Something went wrong revoking token");
+                _logger.LogError(ex, "POST:/token/revoke");
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
+        }
+
+        [HttpPost("password/request-reset")]
+        public async Task<IActionResult> RequestResetPassword(RequestResetPasswordDTO request)
+        {
+            try
+            {
+                var result = await _tokenService.RequestResetPassswordAsync(request).ConfigureAwait(false);
+
+                if (result.Succeeded)
+                    return Ok();
+
+                return BadRequest(result);
+            }catch(Exception ex)
+            {
+                _logger.LogError(ex, "POST:/password/request-reset");
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpPost("password/token-validate")]
+        [ProducesResponseType(typeof(ActionResult), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IdentityResult>> ValidateResetPasswordTokenAsync([FromBody] PasswordTokenValidationDTO request)
+        {
+            try
+            {
+                var result = await _tokenService.ValidateResetPasswordTokenAsync(request).ConfigureAwait(false);
+
+                if (result.Succeeded)
+                    return Ok();
+
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "POST:/password/token-validate");
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+
         }
     }
 }

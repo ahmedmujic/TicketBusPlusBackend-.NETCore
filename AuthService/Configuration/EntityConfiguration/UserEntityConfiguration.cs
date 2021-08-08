@@ -12,9 +12,9 @@ namespace AuthService.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.HasMany(u => u.RefreshTokens)
+            /*builder.HasMany(u => u.RefreshTokens)
                 .WithOne(r => r.User)
-                .HasForeignKey(r => r.UserId);
+                .HasForeignKey(r => r.UserId);*/
 
         }
     }

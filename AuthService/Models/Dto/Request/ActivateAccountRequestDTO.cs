@@ -4,15 +4,14 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AuthService.Models.Dto
+namespace AuthService.Models.Dto.Request
 {
-    public class AuthenticationDto
+    public class ActivateAccountRequestDTO
     {
         [Required]
-        public string Email { get; set; }
+        public string Id { get; set; }
 
         [Required]
-        public string  Password { get; set; }
-
+        public string Token { get; set; }
     }
 }

@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
+using NotificationService.Constants;
+using NotificationService.Events;
 using NotificationService.Helpers;
 using IMailService = NotificationService.Interfaces.IMailService;
 
@@ -26,33 +28,41 @@ namespace NotificationService.Services
             _mail = new MimeMessage();
             _mail.From.Add(new MailboxAddress(_emailSettings.Value.FromName, _emailSettings.Value.From));
         }
-        public async Task<bool> SendEmailAsync(string to, string subject, string body, bool isHTML = false, string fullName = null)
-        {
-            _mail.To.Add(new MailboxAddress("Reciever", to));
-            _mail.Subject = subject;
 
+        private string GetHtmlTemplate(string subject, string FirstName, string link)
+        {
+            return subject switch
+            {
+                EmailConstants.UserActivation => EmailHtml.EmailActivation(FirstName, link),
+                EmailConstants.ResetPassword => EmailHtml.ResetPassword(FirstName, link),
+                _ => throw new Exception("Email subject is not supported"),
+            };
+        }
+
+        public async Task<bool> SendEmailAsync(UserRegistered to, string subject, string body, bool isHTML = false, string fullName = null)
+        {
+            _mail.To.Add(new MailboxAddress("Reciever", to.Email));
+            _mail.Subject = subject;           
 
             if (isHTML)
-                _mail.Body = new TextPart(TextFormat.Html) { Text = EmailHtml.EmailActivation(body) };
+                _mail.Body = new TextPart(TextFormat.Html) { Text = GetHtmlTemplate(subject, to.FirstName, to.ConfrimationLink) };
             else
                 _mail.Body = new TextPart(TextFormat.Plain) { Text = body };
-
 
             try
             {
                 using (var client = new MailKit.Net.Smtp.SmtpClient())
                 {
                     await client.ConnectAsync("smtp.gmail.com", 587, false);
-                    await client.AuthenticateAsync(_emailSettings.Value.From, _emailSettings.Value.Password);
+                    await client.AuthenticateAsync(_emailSettings.Value.From, Environment.GetEnvironmentVariable("email_password"));
                     await client.SendAsync(_mail);
                     await client.DisconnectAsync(true);
                 }
-
                 return true;
             }
-            catch (SmtpException exception)
+            catch (Exception ex)
             {
-                System.Console.WriteLine(exception.Message);
+                _logger.LogError(ex, nameof(SendEmailAsync));
                 return false;
             }
         }

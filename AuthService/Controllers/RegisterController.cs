@@ -1,5 +1,7 @@
-﻿using AuthService.Interfaces;
+﻿using AuthService.Constants.Errors;
+using AuthService.Interfaces;
 using AuthService.Models.Dto;
+using AuthService.Models.Dto.Request;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +25,7 @@ namespace AuthService.Controllers
              ILogger<RegisterController> logger)
         {
             _logger = logger;
-            _registrationService = registrationService; 
+            _registrationService = registrationService;
         }
 
         [HttpPost("register")]
@@ -33,10 +35,9 @@ namespace AuthService.Controllers
             {
                 IdentityResult result = await _registrationService.Register(user)
                                                           .ConfigureAwait(false);
-
                 if (result.Succeeded)
                     return Ok(result);
-                return Conflict(result);
+                return BadRequest(result);
             }
             catch (Exception ex)
             {
@@ -45,22 +46,44 @@ namespace AuthService.Controllers
             }
         }
         
-        [HttpPost("confirmEmail/{userId}/{token}")]
-        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        [HttpPost("confirm")]
+        public async Task<IActionResult> ConfirmEmail(ActivateAccountRequestDTO request)
         {
-            if (userId is null || token is null)
-                return BadRequest(new { message= "userId and token are required" });
             try
             {
-                var result = await _registrationService.ConfirmEmail(userId, token);
-                if (result)
-                    return NoContent();
-                return BadRequest(new { message = "Invalid id or token" });
-            }catch(Exception e)
+                var errorDescriber = new IdentityErrorDescriber();
+                var result = await _registrationService.ActivateAccountAsync(request);
+
+                if (result.Succeeded)
+                    return Ok();
+               
+                return BadRequest(IdentityResult.Failed(errorDescriber.InvalidToken()));
+            }
+            catch(Exception ex)
             {
-                Console.WriteLine(e);
-                return BadRequest("Something went wrong");
+                _logger.LogError(ex, "POST:/confirmEmail");
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
+
+        [HttpPost("resend/{email}")]
+        public async Task<IActionResult> ResendEmail(string email)
+        {
+            try
+            {
+                var result = await _registrationService.ResendActivationMailAsync(email);
+
+                if (result.Succeeded)
+                    return Ok();
+
+                return BadRequest(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "POST:/confirmEmail");
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
     }
 }

@@ -10,8 +10,8 @@ namespace AuthService.Models
 {
     public class User : IdentityUser
     {
-        [JsonIgnore]
-        public ICollection<RefreshToken> RefreshTokens { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
 
         public ICollection<ApplicationUserRole> UserRoles { get; set; }
 

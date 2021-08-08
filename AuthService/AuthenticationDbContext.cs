@@ -26,7 +26,7 @@ namespace AuthService
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.ApplyConfiguration(new UserEntityConfiguration());
+            //builder.ApplyConfiguration(new UserEntityConfiguration());
             base.OnModelCreating(builder);
 
             builder.Entity<ApplicationUserRole>(userRole =>

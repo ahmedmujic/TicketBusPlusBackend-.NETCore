@@ -9,14 +9,14 @@ namespace AuthService.Events
     public class UserRegistered : Event
     {
         public readonly string Id;
-        public readonly string UserName;
+        public readonly string FirstName;
         public readonly string Email;
         public readonly string ConfirmationLink; 
 
-        public UserRegistered(Guid messageId, string userId, string userName, string email, string confirmationLink) : base(messageId)
+        public UserRegistered(Guid messageId, string userId, string firstName, string email, string confirmationLink) : base(messageId)
         {
             Id = userId;
-            UserName = userName;
+            FirstName = firstName;
             Email = email;
             ConfirmationLink = confirmationLink;
         }

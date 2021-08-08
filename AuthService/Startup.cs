@@ -4,19 +4,14 @@ using AuthService.Models;
 using AuthService.Models.Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Serilog;
 
 namespace AuthService
 {
@@ -47,14 +42,20 @@ namespace AuthService
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, RoleManager<Role> roleManager, UserManager<User> userManager)
+        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env, AuthenticationDbContext dbContext)
         {
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(Configuration)
+                .CreateLogger();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AuthService v1"));
             }
+
+            dbContext.Database.Migrate();
 
             app.UseHttpsRedirection();
 
@@ -69,8 +70,11 @@ namespace AuthService
                 endpoints.MapControllers();
             });
 
+            app.UseIdentityServer();
 
-            Seed.SeedUsers(userManager, roleManager).Wait();
+            await app.UseIdentityServerDataAsync(Configuration)
+                        .ConfigureAwait(false);
+            //Seed.SeedUsers(userManager, roleManager).Wait();
         }
     }
 }

@@ -15,7 +15,7 @@ namespace AuthService.Profiles
     {
         public UserProfile()
         {
-            CreateMap<User, UserRegistered>();
+            CreateMap<UserDto, User>().ReverseMap();
             CreateMap<UserRegistered, User>();
             CreateMap<RoleDto, Role>();
         }

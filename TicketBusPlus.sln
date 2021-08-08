@@ -9,9 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationService", "Noti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messaging", "Messaging\Messaging.csproj", "{4AD83064-1284-43B6-AB4D-6DD9025196AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingManagement", "BookingManagement\BookingManagement.csproj", "{558D4367-E517-4D43-A14D-FCE78A114C34}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookingManagement", "BookingManagement\BookingManagement.csproj", "{558D4367-E517-4D43-A14D-FCE78A114C34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicketService.API", "TicketService.API\TicketService.API.csproj", "{A16F22E6-2AEE-4F51-B104-927D6D68FA8C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TicketService.API", "TicketService.API\TicketService.API.csproj", "{A16F22E6-2AEE-4F51-B104-927D6D68FA8C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OcelotApiGw", "OcelotApiGw\OcelotApiGw.csproj", "{5769AF0A-0370-4E46-838B-6661C5627753}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{A16F22E6-2AEE-4F51-B104-927D6D68FA8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A16F22E6-2AEE-4F51-B104-927D6D68FA8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A16F22E6-2AEE-4F51-B104-927D6D68FA8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5769AF0A-0370-4E46-838B-6661C5627753}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5769AF0A-0370-4E46-838B-6661C5627753}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5769AF0A-0370-4E46-838B-6661C5627753}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5769AF0A-0370-4E46-838B-6661C5627753}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

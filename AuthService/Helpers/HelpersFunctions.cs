@@ -16,7 +16,7 @@ namespace AuthService.Helpers
             return httpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
         }
 
-        public static void SetTokenCookie(string token, HttpResponse response)
+        public static void SetTokenCookie(this HttpResponse response, string token)
         {
             var cookieOptions = new CookieOptions
             {

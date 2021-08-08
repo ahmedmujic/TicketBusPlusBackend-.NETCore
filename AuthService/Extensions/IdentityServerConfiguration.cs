@@ -5,6 +5,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using AuthService.Constants.Assemblies;
+using AuthService.Constants.TokenProviders;
+using AuthService.Extensions.Providers;
 using AuthService.Models;
 using AuthService.Models.Domain;
 using AuthService.Services;
@@ -32,8 +34,10 @@ namespace AuthService.Extensions
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireDigit = false;
+                options.Tokens.PasswordResetTokenProvider = TokenProviders.PasswordTokenProvider;
             })
              .AddEntityFrameworkStores<AuthenticationDbContext>()
+             .AddTokenProvider<PasswordResetTokenProvider<User>>(TokenProviders.PasswordTokenProvider)
              .AddDefaultTokenProviders();
 
             services.AddIdentityServer()

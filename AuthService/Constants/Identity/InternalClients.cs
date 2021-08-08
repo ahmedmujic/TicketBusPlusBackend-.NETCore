@@ -7,6 +7,6 @@ namespace AuthService.Constants.IdentityConfiguration
 {
     public class InternalClients
     {
-        public const string Mobile = "Mobile"; 
+        public const string Web = "Web"; 
     }
 }

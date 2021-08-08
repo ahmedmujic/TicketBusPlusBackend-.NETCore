@@ -7,6 +7,6 @@ namespace AuthService.Constants.Assemblies
 {
     public class InternalAsseblies
     {
-        public const string Database = "TicketBusPlus.AuthService.Database";
+        public const string Database = "AuthService";
     }
 }
