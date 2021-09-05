@@ -28,12 +28,12 @@ namespace AuthService.Controllers
             _registrationService = registrationService;
         }
 
-        [HttpPost("register")]
-        public async Task<ActionResult> Register([FromBody]UserDto user)
+        [HttpPost("user")]
+        public async Task<ActionResult> RegisterUser([FromBody]UserDto user)
         {
             try
             {
-                IdentityResult result = await _registrationService.Register(user)
+                IdentityResult result = await _registrationService.RegisterUserAsync(user)
                                                           .ConfigureAwait(false);
                 if (result.Succeeded)
                     return Ok(result);
@@ -47,7 +47,7 @@ namespace AuthService.Controllers
         }
         
         [HttpPost("confirm")]
-        public async Task<IActionResult> ConfirmEmail(ActivateAccountRequestDTO request)
+        public async Task<ActionResult<IdentityResult>> ConfirmEmail(ActivateAccountRequestDTO request)
         {
             try
             {
@@ -66,12 +66,13 @@ namespace AuthService.Controllers
             }
         }
 
-        [HttpPost("resend/{email}")]
-        public async Task<IActionResult> ResendEmail(string email)
+        
+        [HttpPost("resend/{id}")]
+        public async Task<IActionResult> ResendEmail(string id)
         {
             try
             {
-                var result = await _registrationService.ResendActivationMailAsync(email);
+                var result = await _registrationService.ResendActivationMailAsync(id);
 
                 if (result.Succeeded)
                     return Ok();

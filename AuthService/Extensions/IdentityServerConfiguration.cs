@@ -37,8 +37,9 @@ namespace AuthService.Extensions
                 options.Tokens.PasswordResetTokenProvider = TokenProviders.PasswordTokenProvider;
             })
              .AddEntityFrameworkStores<AuthenticationDbContext>()
-             .AddTokenProvider<PasswordResetTokenProvider<User>>(TokenProviders.PasswordTokenProvider)
-             .AddDefaultTokenProviders();
+              .AddDefaultTokenProviders()
+             .AddTokenProvider<PasswordResetTokenProvider<User>>(TokenProviders.PasswordTokenProvider);
+            
 
             services.AddIdentityServer()
                     .AddDeveloperSigningCredential()

@@ -19,6 +19,7 @@ using Microsoft.Extensions.Options;
 using AuthService.Models.Settings;
 using AuthService.Models.Dto.Request;
 using AuthService.Constants.Errors;
+using AuthService.Constants.Identity;
 
 namespace AuthService.Services
 {
@@ -44,7 +45,9 @@ namespace AuthService.Services
             _userManager = userManager;
         }
 
-        public async Task<IdentityResult> Register(UserDto user)
+        
+
+        public async Task<IdentityResult> RegisterUserAsync(UserDto user)
         {
             try
             {
@@ -57,27 +60,33 @@ namespace AuthService.Services
                         new Claim("email", applicationUser.Email)
                 }).ConfigureAwait(false);
 
-                    await _userManager.AddToRolesAsync(applicationUser, new List<string>() { "Admin" })
-                                      .ConfigureAwait(false); // Define user roles on registration
+                    await _userManager.AddToRolesAsync(applicationUser, new List<string>() { user.CeoFirstName!= null ? Roles.Company : Roles.User })
+                                      .ConfigureAwait(false);
 
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(applicationUser).ConfigureAwait(false);
 
                     token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
-                    var confirmationLink = $"{_emailSettings.Value.FrontendAppUrl}/user/activate?userId=" + applicationUser.Id + "&token=" + token;
-
-                    UserRegistered e = new UserRegistered(new Guid(), applicationUser.Id, applicationUser.FirstName, applicationUser.Email, confirmationLink);
-
-                    await _messagePublisher.PublishMessageAsync(e.MessageType, e, "");
+                    await SendEmailAsync(applicationUser, applicationUser.FirstName, token).ConfigureAwait(false);                    
                 }
 
                 return identityResult;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(Register));
+                _logger.LogError(ex, nameof(RegisterUserAsync));
                 throw;
             }
+        }
+
+        public async Task SendEmailAsync(IdentityUser user, string name, string token)
+        {      
+
+            var confirmationLink = $"{_emailSettings.Value.FrontendAppUrl}/auth/activate?userId=" + user.Id + "&token=" + token;
+
+            UserRegistered e = new UserRegistered(new Guid(), user.Id, name, user.Email, confirmationLink);
+
+            await _messagePublisher.PublishMessageAsync(e.MessageType, e, "");
         }
 
         public async Task<IdentityResult> ActivateAccountAsync(ActivateAccountRequestDTO request)
@@ -113,48 +122,24 @@ namespace AuthService.Services
             }
         }
 
-        public async Task<IdentityResult> ResetPasswordAsync(ResetPasswordRequestDTO request)
+        
+
+        public async Task<IdentityResult> ResendActivationMailAsync(string id)
         {
-            try
-            {
-                var user = await _userManager.FindByIdAsync(request.Id).ConfigureAwait(false);
-
-                if (user is null)
-                    return IdentityResult.Failed(new IdentityError
-                    {
-                        Code = ErrorCodes.UserNotFound,
-                        Description = ErrorDescriptions.UserNotFoundEmail
-                    });
-
-                if (!user.EmailConfirmed)
-                    return IdentityResult.Failed(new IdentityError
-                    {
-                        Code = ErrorCodes.AccountNotConfirmed,
-                        Description = ErrorDescriptions.AccountNotConfirmed
-                    });
-
-                var decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(request.Token));
-
-                var result = await _userManager.ResetPasswordAsync(user, decodedToken, request.Password).ConfigureAwait(false);
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, nameof(ResetPasswordAsync));
-                throw;
-            }
-        }
-
-        public async Task<IdentityResult> ResendActivationMailAsync(string email)
-        {
-            var user = await _userManager.FindByEmailAsync(email).ConfigureAwait(false);
+            var user = await _userManager.FindByIdAsync(id).ConfigureAwait(false);
 
             if (user is null)
                 return IdentityResult.Failed(new IdentityError
                 {
                     Code = ErrorCodes.UserNotFound,
                     Description = ErrorDescriptions.UserNotFoundEmail
+                });
+
+            if (user.EmailConfirmed)
+                return IdentityResult.Failed(new IdentityError
+                {
+                    Code = ErrorCodes.AccountAlreadyConfirmed,
+                    Description = ErrorDescriptions.AccountAlreadyConfirmed
                 });
 
             var result = await _userManager.UpdateSecurityStampAsync(user).ConfigureAwait(false);
@@ -166,7 +151,7 @@ namespace AuthService.Services
                 token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
                 var confirmationLink =
-                    $"{_emailSettings.Value.FrontendAppUrl}/user/sign-up/activate-account?userId={user.Id}&token={token}";
+                    $"{_emailSettings.Value.FrontendAppUrl}/auth/activate?userId={user.Id}&token={token}";
 
                 UserRegistered e = new UserRegistered(new Guid(), user.Id, user.FirstName, user.Email, confirmationLink);
 

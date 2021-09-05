@@ -9,5 +9,6 @@ namespace AuthService.Constants.IdentityConfiguration
     {
         public const string BookingManagement = "BookingManagement";
         public const string TicketService = "TicketService";
+        public const string IdentityServer = "IdentityServer";
     }
 }

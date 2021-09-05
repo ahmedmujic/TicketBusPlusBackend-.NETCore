@@ -13,11 +13,15 @@ using IdentityModel.Client;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using AuthService.Models.Dto.Response;
+using UserInfoResponseDTO = AuthService.Models.Dto.Response.UserInfoResponseDTO;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace AuthService.Controllers
 {
     [Route("api/auth")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AuthController : ControllerBase
     {
         private readonly ILogger<AuthController> _logger;
@@ -30,6 +34,7 @@ namespace AuthService.Controllers
             _tokenService = tokenService;
         }
 
+        [AllowAnonymous]
         [HttpPost("authenticate")]
         public async Task<IActionResult> AuthenticateUser([FromBody] TokenRequestDTO tokenRequest)
         {
@@ -61,6 +66,24 @@ namespace AuthService.Controllers
             }
         }
 
+        [HttpGet("user")]
+        public async Task<ActionResult<UserInfoResponseDTO>> GetUserInfo()
+        {
+            try
+            {
+                var token = Request.Headers.Values;
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var role = User.FindFirst(ClaimTypes.Role)?.Value;
+                var result = await _tokenService.GetUserInfoAsync(userId, role).ConfigureAwait(false);
+                return Ok(result);
+            }catch(Exception ex)
+            {
+                _logger.LogError(ex, "GET:/user");
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [AllowAnonymous]
         [HttpPost("token/refresh")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDTO tokenRequest)
         {
@@ -94,11 +117,15 @@ namespace AuthService.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost("token/revoke")]
         public async Task<IActionResult> RevokeToken([FromBody] RefreshTokenRequestDTO tokenRequest)
         {
             try
             {
+                var refreshToken = Request.Cookies["refreshToken"];
+                tokenRequest.RefreshToken = refreshToken;
+
                 TokenRevocationResponse result = await _tokenService.RevokeTokenAsync(tokenRequest).ConfigureAwait(false);
 
                 if (result.IsError)
@@ -106,6 +133,8 @@ namespace AuthService.Controllers
                         Code = result.Error,
                         Description = null
                     }));
+
+                Response.DeleteTokenCookie();
 
                 return Ok();
             }
@@ -116,6 +145,7 @@ namespace AuthService.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost("password/request-reset")]
         public async Task<IActionResult> RequestResetPassword(RequestResetPasswordDTO request)
         {
@@ -134,6 +164,27 @@ namespace AuthService.Controllers
             }
         }
 
+        [AllowAnonymous]
+        [HttpPost("password/reset")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequestDTO request)
+        {
+            try
+            {
+                var result = await _tokenService.ResetPasswordAsync(request).ConfigureAwait(false);
+
+                if (result.Succeeded)
+                    return Ok();
+
+                return BadRequest(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "POST:/password/request-reset");
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [AllowAnonymous]
         [HttpPost("password/token-validate")]
         [ProducesResponseType(typeof(ActionResult), StatusCodes.Status200OK)]
         public async Task<ActionResult<IdentityResult>> ValidateResetPasswordTokenAsync([FromBody] PasswordTokenValidationDTO request)

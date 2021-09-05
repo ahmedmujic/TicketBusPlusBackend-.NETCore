@@ -31,6 +31,18 @@ namespace OcelotApiGw
         {
             var authenticationProviderKey = "IdentityApiKey";
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: "Frontend",
+                                  builder =>
+                                  {
+                                      builder.WithOrigins("http://localhost:4200")
+                                      .AllowAnyHeader()
+                                      .AllowCredentials()
+                                      .AllowAnyMethod();
+                                  });
+            });
+
             services.AddAuthentication()
                 .AddJwtBearer(authenticationProviderKey, options =>
                 {
@@ -38,7 +50,7 @@ namespace OcelotApiGw
                     options.RequireHttpsMetadata = false;
                     options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
                     {
-                        ValidAudiences = new[] { "AuthService", "BookingManagement"}
+                        ValidAudiences = new[] { "AuthService", "BookingManagement", "IdentityServer", "TicketService", "offline_access" }
                     };
                 });
 
@@ -56,6 +68,8 @@ namespace OcelotApiGw
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors("Frontend");
 
             app.UseAuthorization();
 

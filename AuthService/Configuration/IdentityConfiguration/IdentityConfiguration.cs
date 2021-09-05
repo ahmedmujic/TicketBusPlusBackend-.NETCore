@@ -25,7 +25,8 @@ namespace AuthService.Configuration.IdentityConfiguration
             return new List<ApiResource>
             {
                 new ApiResource(name: InternalApis.TicketService, displayName: "TicketService API") { Scopes = new List<string>() { InternalApis.TicketService } },
-                new ApiResource(name: InternalApis.BookingManagement, displayName: "BookingManagement API") { Scopes = new List<string>() { InternalApis.BookingManagement } }
+                new ApiResource(name: InternalApis.BookingManagement, displayName: "BookingManagement API") { Scopes = new List<string>() { InternalApis.BookingManagement } },
+                 new ApiResource(name: InternalApis.IdentityServer, displayName: "IdentityServer API") { Scopes = new List<string>() { InternalApis.IdentityServer } }
             };
         }
 
@@ -34,7 +35,8 @@ namespace AuthService.Configuration.IdentityConfiguration
             return new[]
             {
                 new ApiScope(name: InternalApis.TicketService,   displayName: "TicketService Api Access"),
-                new ApiScope(name: InternalApis.BookingManagement,   displayName: "BookingManagement Api Access")
+                new ApiScope(name: InternalApis.BookingManagement,   displayName: "BookingManagement Api Access"),
+                new ApiScope(name: InternalApis.IdentityServer,   displayName: "IdentityServer Api Access")
             };
         }
 
@@ -51,6 +53,7 @@ namespace AuthService.Configuration.IdentityConfiguration
                     {
                         InternalApis.TicketService,
                         InternalApis.BookingManagement,
+                        InternalApis.IdentityServer,
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,

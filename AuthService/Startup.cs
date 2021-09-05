@@ -1,7 +1,10 @@
+using AuthService.Constants.IdentityConfiguration;
 using AuthService.Data;
 using AuthService.Extensions;
 using AuthService.Models;
 using AuthService.Models.Domain;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -27,9 +30,32 @@ namespace AuthService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: "Frontend",
+                                  builder =>
+                                  {
+                                      builder.WithOrigins("http://localhost:4200")
+                                      .AllowAnyHeader()
+                                      .AllowCredentials()
+                                      .AllowAnyMethod();
+                                  });
+            });
             services.AddIdentityServices(Configuration);
             services.AddApplicationServices(Configuration);
             services.AddAppVersioning();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.Authority = Configuration.GetSection("AuthApiUrl").Value;
+                    options.RequireHttpsMetadata = true;
+                    options.Audience = InternalApis.IdentityServer;
+                }).AddCookie(options =>
+                {
+                    // add an instance of the patched manager to the options:
+                    options.CookieManager = new ChunkingCookieManager();
+                });
 
             services.AddDbContextPool<AuthenticationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("IdentityDbContext")));
@@ -57,11 +83,14 @@ namespace AuthService
 
             dbContext.Database.Migrate();
 
+
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
 
             app.UseRouting();
+
+            app.UseCors("Frontend");
 
             app.UseAuthorization();
 

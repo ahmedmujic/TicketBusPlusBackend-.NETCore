@@ -12,8 +12,8 @@ namespace AuthService.Interfaces
 {
     public interface IRegistrationService
     {
-        Task<IdentityResult> Register(UserDto user);
+        Task<IdentityResult> RegisterUserAsync(UserDto user);
         Task<IdentityResult> ActivateAccountAsync(ActivateAccountRequestDTO request);
-        Task<IdentityResult> ResendActivationMailAsync(string email);
+        Task<IdentityResult> ResendActivationMailAsync(string id);
     }
 }

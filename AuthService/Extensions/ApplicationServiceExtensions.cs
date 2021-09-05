@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using AuthService.Services.Interfaces;
 using Messaging.Configuration;
 using AuthService.Models.Settings;
+using IdentityServer4.Validation;
 
 namespace AuthService.Extensions
 {
@@ -24,6 +25,8 @@ namespace AuthService.Extensions
 
             services.AddScoped<IRegistrationService, RegistrationService>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IResourceOwnerPasswordValidator, ResourceOwnerPasswordValidator>();
+            services.AddScoped<IIdentityUserService<User>, IdentityUserService<User>>();
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

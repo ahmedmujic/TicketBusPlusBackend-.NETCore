@@ -6,6 +6,7 @@ using AuthService.Events;
 using AuthService.Models;
 using AuthService.Models.Domain;
 using AuthService.Models.Dto;
+using AuthService.Models.Dto.Response;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 
@@ -18,6 +19,7 @@ namespace AuthService.Profiles
             CreateMap<UserDto, User>().ReverseMap();
             CreateMap<UserRegistered, User>();
             CreateMap<RoleDto, Role>();
+            CreateMap<User, UserInfoResponseDTO>();
         }
     }
 }

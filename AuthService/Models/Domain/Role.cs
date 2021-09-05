@@ -8,31 +8,6 @@ namespace AuthService.Models.Domain
 {
     public class Role : IdentityRole
     {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         public ICollection<ApplicationUserRole> UserRoles { get; set; }
     }
 }

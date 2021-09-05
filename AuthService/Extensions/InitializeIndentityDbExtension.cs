@@ -1,4 +1,5 @@
 ﻿using AuthService.Configuration.IdentityConfiguration;
+using AuthService.Constants.Identity;
 using AuthService.Models.Domain;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
@@ -68,8 +69,16 @@ namespace AuthService.Extensions
                 // seed the Identity
                 // s (define here which roles application will have)
                 var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
-                if (!roleManager.Roles.Any(r => r.Name.Equals("Admin")))
-                    await roleManager.CreateAsync(new Role { Name ="Admin"})
+                if (!roleManager.Roles.Any(r => r.Name.Equals(Roles.Admin)))
+                    await roleManager.CreateAsync(new Role { Name = Roles.Admin })
+                                     .ConfigureAwait(false);
+
+                if (!roleManager.Roles.Any(r => r.Name.Equals(Roles.Company)))
+                    await roleManager.CreateAsync(new Role { Name = Roles.Company })
+                                     .ConfigureAwait(false);
+
+                if (!roleManager.Roles.Any(r => r.Name.Equals(Roles.User)))
+                    await roleManager.CreateAsync(new Role { Name = Roles.User })
                                      .ConfigureAwait(false);
             }
         }

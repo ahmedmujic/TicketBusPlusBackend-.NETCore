@@ -1,4 +1,5 @@
 ﻿using AuthService.Models.Domain;
+using AuthService.Models.Enum.User;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,13 @@ namespace AuthService.Models
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-
+        public Gender Gender { get; set; }
+        public string CeoFirstName { get; set; }
+        public string CeoLastName { get; set; }
+        public string Description { get; set; }
+        public string Logo { get; set; }
+        public DateTime RegistrationDate { get; set; }
+        public bool IsBlocked { get; set; }
         public ICollection<ApplicationUserRole> UserRoles { get; set; }
 
     }

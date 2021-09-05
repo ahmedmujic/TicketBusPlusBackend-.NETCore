@@ -21,10 +21,24 @@ namespace AuthService.Helpers
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Expires = DateTime.UtcNow.AddDays(7)
+                Expires = DateTime.UtcNow.AddDays(7),
+                SameSite = SameSiteMode.None,
+                Secure = true
             };
 
             response.Cookies.Append("refreshToken", token, cookieOptions);
+        }
+
+        public static void DeleteTokenCookie(this HttpResponse response)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.None,
+                Secure = true
+            };
+
+            response.Cookies.Delete("refreshToken",  cookieOptions);
         }
     }
 }

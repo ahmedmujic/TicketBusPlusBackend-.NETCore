@@ -15,8 +15,10 @@ using AuthService.Models;
 using AuthService.Models.Domain;
 using AuthService.Models.Dto;
 using AuthService.Models.Dto.Request;
+using AuthService.Models.Dto.Response;
 using AuthService.Models.Settings;
 using AuthService.Services.Interfaces;
+using AutoMapper;
 using IdentityModel.Client;
 using Messaging;
 using Microsoft.AspNetCore.Identity;
@@ -38,13 +40,17 @@ namespace AuthService.Services
         private readonly IHttpClientFactory _clientFactory;
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _config;
+        private readonly IMapper _mapper;
+        private readonly AuthenticationDbContext _dbContext;
 
         public TokenService(IHttpClientFactory clientFactory,
             IConfiguration config,
             UserManager<User> userManager,
             ILogger<TokenService> logger,
             IOptions<EmailSettings> emailSettings,
-            IMessagePublisher messagePublisher)
+            IMessagePublisher messagePublisher,
+            IMapper mapper,
+            AuthenticationDbContext dbContext)
         {
             _messagePublisher = messagePublisher;
             _emailSettings = emailSettings;
@@ -52,6 +58,8 @@ namespace AuthService.Services
             _clientFactory = clientFactory;
             _userManager = userManager;
             _config = config;
+            _mapper = mapper;
+            _dbContext = dbContext;
         }
 
 
@@ -169,7 +177,7 @@ namespace AuthService.Services
                     token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
                     var resetPasswordLink =
-                        $"{_emailSettings.Value.FrontendAppUrl}/user/login/reset-password?userId={user.Id}&token={token}";
+                        $"{_emailSettings.Value.FrontendAppUrl}/auth/reset-password?userId={user.Id}&token={token}";
 
                     ResetPassword e = new ResetPassword(new Guid(), user.Id, user.FirstName, user.Email, resetPasswordLink);
 
@@ -205,6 +213,57 @@ namespace AuthService.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, nameof(ValidateResetPasswordTokenAsync));
+                throw;
+            }
+        }
+
+        public async Task<IdentityResult> ResetPasswordAsync(ResetPasswordRequestDTO request)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(request.Id).ConfigureAwait(false);
+
+                if (user is null)
+                    return IdentityResult.Failed(new IdentityError
+                    {
+                        Code = ErrorCodes.UserNotFound,
+                        Description = ErrorDescriptions.UserNotFoundEmail
+                    });
+
+                if (!user.EmailConfirmed)
+                    return IdentityResult.Failed(new IdentityError
+                    {
+                        Code = ErrorCodes.AccountNotConfirmed,
+                        Description = ErrorDescriptions.AccountNotConfirmed
+                    });
+
+                var decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(request.Token));
+
+                var result = await _userManager.ResetPasswordAsync(user, decodedToken, request.Password).ConfigureAwait(false);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(ResetPasswordAsync));
+                throw;
+            }
+        }
+
+        public async Task<UserInfoResponseDTO> GetUserInfoAsync(string userId, string role)
+        {
+            try
+            {
+                
+                var result = await _userManager.FindByIdAsync(userId).ConfigureAwait(false);
+
+                var mapped = _mapper.Map<UserInfoResponseDTO>(result);
+
+                return mapped; 
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, nameof(GetUserInfoAsync));
                 throw;
             }
         }

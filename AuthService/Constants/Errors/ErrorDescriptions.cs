@@ -10,6 +10,7 @@ namespace AuthService.Constants.Errors
         public const string AccountNotConfirmed = "Account is not confirmed";
         public const string TokenUserRequired = "UserId and token are required";
         public const string UserNotFoundEmail = "User does not exist";
+        public const string AccountAlreadyConfirmed = "Account already confirmed";
 
     }
 }
