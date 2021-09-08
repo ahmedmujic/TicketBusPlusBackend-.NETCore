@@ -1,6 +1,7 @@
 ﻿using BookingManagement.Helpers;
 using BookingManagement.Models.DTO.Bus.Request;
 using BookingManagement.Models.DTO.Route;
+using BookingManagement.Models.DTO.Route.Request;
 using BookingManagement.Models.DTO.Route.Response;
 using BookingManagement.Services.Town.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -49,7 +50,7 @@ namespace BookingManagement.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<PaginationListResponse<RouteResponseDTO>>> GetAllRoutes([FromQuery] PaginationRequestDTO request)
+        public async Task<ActionResult<PaginationListResponse<RouteResponseDTO>>> GetAllRoutes([FromQuery] RoutesRequest request)
         {
             try
             {

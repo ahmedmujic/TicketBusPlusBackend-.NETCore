@@ -1,13 +1,13 @@
-﻿using System;
+﻿using BookingManagement.Models.DTO.Bus.Request;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace BookingManagement.Models.DTO.Town
 {
-    public class TownRequest
+    public class TownRequest : PaginationRequestDTO
     {
-        public int Offset { get; set; }
-        public int Elements { get; set; }
+       
     }
 }

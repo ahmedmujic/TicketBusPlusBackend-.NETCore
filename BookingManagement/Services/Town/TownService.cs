@@ -33,7 +33,7 @@ namespace BookingManagement.Services.Town
                     Name = x.Name
                 });
 
-                var listResult = LoadMoreList<TownResponse>.ToLoadMoreListAsync(result, request.Offset, request.Elements);
+                var listResult = LoadMoreList<TownResponse>.ToLoadMoreListAsync(result, request.CurrentPage, request.ItemsPerPage);
 
                 return listResult;
             }catch(Exception ex)

@@ -1,6 +1,7 @@
 ﻿using BookingManagement.Helpers;
 using BookingManagement.Models.DTO.Bus.Request;
 using BookingManagement.Models.DTO.Route;
+using BookingManagement.Models.DTO.Route.Request;
 using BookingManagement.Models.DTO.Route.Response;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,6 @@ namespace BookingManagement.Services.Town.Interfaces
     {
         Task<AddRouteResponseDTO> AddRouteAsync(AddRouteRequestDTO request);
         Task<IEnumerable<TopSellingResponseDTO>> GetTopSellingRoutesAsync(string userId);
-        Task<PaginationListResponse<RouteResponseDTO>> GetRoutesAsync(PaginationRequestDTO request);
+        Task<PaginationListResponse<RouteResponseDTO>> GetRoutesAsync(RoutesRequest request);
     }
 }

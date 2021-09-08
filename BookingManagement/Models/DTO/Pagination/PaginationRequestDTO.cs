@@ -10,6 +10,7 @@ namespace BookingManagement.Models.DTO.Bus.Request
     {
         public int CurrentPage { get; set; }
         public int ItemsPerPage { get; set; }
+
         [JsonIgnore]
         public string UserId { get; set; }
     }

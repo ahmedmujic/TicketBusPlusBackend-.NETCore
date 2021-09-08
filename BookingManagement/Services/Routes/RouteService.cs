@@ -3,6 +3,7 @@ using BookingManagement.Helpers;
 using BookingManagement.Models.Domain;
 using BookingManagement.Models.DTO.Bus.Request;
 using BookingManagement.Models.DTO.Route;
+using BookingManagement.Models.DTO.Route.Request;
 using BookingManagement.Models.DTO.Route.Response;
 using BookingManagement.Services.Town.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -54,7 +55,8 @@ namespace BookingManagement.Services.Routes
                     StartStationId = request.StartStationId,
                     EndStationId = request.EndStationId,
                     Dates = dates,
-                    CompandyId = request.CompanyId
+                    CompandyId = request.CompanyId,
+                    Duration = request.Duration
                 };               
 
                 await _dbContext.Routes.AddAsync(routeModel);
@@ -68,7 +70,7 @@ namespace BookingManagement.Services.Routes
             }
         }
 
-        public async Task<PaginationListResponse<RouteResponseDTO>> GetRoutesAsync(PaginationRequestDTO request)
+        public async Task<PaginationListResponse<RouteResponseDTO>> GetRoutesAsync(RoutesRequest request)
         {
             try
             {
@@ -79,18 +81,39 @@ namespace BookingManagement.Services.Routes
                     .ThenInclude(s => s.Town)
                     .Include(r => r.StartStation)
                     .ThenInclude(s => s.Town)
-                    .Where(r => r.CompandyId == request.UserId)
-                    .Select(r => new RouteResponseDTO
-                    {
-                        BusName = r.Bus.Name,
-                        Dates = r.Dates.Select(d => d.Date),
-                        Price = r.Price,
-                        EndingStation = $"{r.EndStation.Name}, {r.EndStation.Town.Name}",
-                        StartingStation = $"{r.StartStation.Name}, {r.StartStation.Town.Name}",
-                        Sells = r.SellCounter
-                    });
+                    .Where(r => r.CompandyId == request.UserId);
 
-                var paginatedResult = await PaginationList<RouteResponseDTO>.ToPaginationListAsync(result, request.CurrentPage, request.ItemsPerPage).ConfigureAwait(false);
+                if (request.StartingDate != null && request.EndingDate != null)
+                {
+                    result = result.Where(r => r.Dates.Select(d => d.Date).Contains(request.StartingDate.Value) && r.Dates.Select(d => d.Date).Contains(request.EndingDate.Value));
+                }
+
+                if(request.FromTownId != null && request.EndTownId != null)
+                {
+                    result = result.Where(r => r.StartStation.Town.Id == request.FromTownId.Value && r.EndStation.Town.Id == request.EndTownId);
+                }
+
+
+                var mainResult = result.Select(r => new RouteResponseDTO
+                {
+                    BusName = r.Bus.Name,
+                    Dates = r.Dates.Select(d => d.Date),
+                    Price = r.Price,
+                    EndingStation = $"{r.EndStation.Name}, {r.EndStation.Town.Name}",
+                    StartingStation = $"{r.StartStation.Name}, {r.StartStation.Town.Name}",
+                    Sells = r.SellCounter
+                });
+
+                /* .Select(r => new RouteResponseDTO
+                  {
+                      BusName = r.Bus.Name,
+                      Dates = r.Dates.Select(d => d.Date),
+                      Price = r.Price,
+                      EndingStation = $"{r.EndStation.Name}, {r.EndStation.Town.Name}",
+                      StartingStation = $"{r.StartStation.Name}, {r.StartStation.Town.Name}",
+                      Sells = r.SellCounter
+                  });*/
+                var paginatedResult = await PaginationList<RouteResponseDTO>.ToPaginationListAsync(mainResult, request.CurrentPage, request.ItemsPerPage).ConfigureAwait(false);
 
                 return new PaginationListResponse<RouteResponseDTO>
                 {

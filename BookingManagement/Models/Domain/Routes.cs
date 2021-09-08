@@ -17,6 +17,7 @@ namespace BookingManagement.Models.Domain
         
         public int EndStationId { get; set; }
         public Station EndStation { get; set; }
+        public string Duration { get; set; }
 
         public int StartStationId { get; set; }
         public Station StartStation { get; set; }

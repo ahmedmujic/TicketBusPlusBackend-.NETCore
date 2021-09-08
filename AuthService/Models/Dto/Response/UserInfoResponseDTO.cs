@@ -13,6 +13,7 @@ namespace AuthService.Models.Dto.Response
         public string Email { get; set; }
         public string UserName { get; set; }
         public string CeoFirstName { get; set; }
+        public string Role { get; set; }
         public string CeoLastName { get; set; }
     }
 }

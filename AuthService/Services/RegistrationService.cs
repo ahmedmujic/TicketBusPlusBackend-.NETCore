@@ -60,7 +60,7 @@ namespace AuthService.Services
                         new Claim("email", applicationUser.Email)
                 }).ConfigureAwait(false);
 
-                    await _userManager.AddToRolesAsync(applicationUser, new List<string>() { user.CeoFirstName!= null ? Roles.Company : Roles.User })
+                    await _userManager.AddToRolesAsync(applicationUser, new List<string>() { user.CeoFirstName== null ? Roles.User : Roles.Company })
                                       .ConfigureAwait(false);
 
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(applicationUser).ConfigureAwait(false);

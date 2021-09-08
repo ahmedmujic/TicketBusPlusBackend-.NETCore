@@ -14,7 +14,7 @@ namespace AuthService.Models.Dto
         public string UserName { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
-        public Gender Gender { get; set; }
+        public Gender Gender { get; set; } = 0;
         public string CeoFirstName { get; set; }
         public string CeoLastName { get; set; }
         public string Description { get; set; }

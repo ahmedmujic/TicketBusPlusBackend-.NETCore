@@ -75,6 +75,7 @@ namespace AuthService.Controllers
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 var role = User.FindFirst(ClaimTypes.Role)?.Value;
                 var result = await _tokenService.GetUserInfoAsync(userId, role).ConfigureAwait(false);
+                result.Role = User.FindFirst(ClaimTypes.Role)?.Value;
                 return Ok(result);
             }catch(Exception ex)
             {

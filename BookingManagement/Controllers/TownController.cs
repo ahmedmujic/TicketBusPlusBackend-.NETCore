@@ -25,6 +25,21 @@ namespace BookingManagement.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetTowns([FromQuery] TownRequest request)
+        {
+            try
+            {
+                var result = await _townService.GetTownsAsync(request).ConfigureAwait(false);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GET:/towns");
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+
+        }
+        [HttpPost]
         public async Task<IActionResult> UploadTownsFile([FromQuery] TownRequest request)
         {
             try

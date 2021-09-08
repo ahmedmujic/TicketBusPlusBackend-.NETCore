@@ -10,6 +10,7 @@ namespace BookingManagement.Models.DTO.Route
         public int StartStationId { get; set; }
         public int EndStationId { get; set; }
         public string CompanyId { get; set; }
+        public string Duration { get; set; }
         public int BusId { get; set; }
         public decimal Price { get; set; }
         public List<DateTime> Dates { get; set; }
