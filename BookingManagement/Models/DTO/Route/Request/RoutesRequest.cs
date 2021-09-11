@@ -13,5 +13,7 @@ namespace BookingManagement.Models.DTO.Route.Request
         public DateTime? EndingDate { get; set; }
         public int? FromTownId { get; set; }
         public int? EndTownId { get; set; }
+        [JsonIgnore]
+        public string Role { get; set; }
     }
 }

@@ -41,6 +41,8 @@ namespace BookingManagement
                                       .AllowAnyMethod();
                                   });
             });
+
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                .AddJwtBearer(options =>
                {
@@ -74,6 +76,9 @@ namespace BookingManagement
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+
+            app.UseCorsMiddleware();
 
             app.UseCors("Frontend");
             app.UseAuthorization();

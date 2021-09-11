@@ -74,18 +74,23 @@ namespace BookingManagement.Services.Routes
         {
             try
             {
-                var result = _dbContext.Routes.AsNoTracking()
+                IQueryable<Models.Domain.Routes> result = _dbContext.Routes.AsNoTracking()
                     .Include(r => r.Bus)
                     .Include(r => r.Dates)
                     .Include(r => r.EndStation)
                     .ThenInclude(s => s.Town)
                     .Include(r => r.StartStation)
-                    .ThenInclude(s => s.Town)
-                    .Where(r => r.CompandyId == request.UserId);
+                    .ThenInclude(s => s.Town);
+                    
+                
+                if(request.Role == "Company")
+                {
+                    result = result.Where(r => r.CompandyId == request.UserId);
+                }
 
                 if (request.StartingDate != null && request.EndingDate != null)
                 {
-                    result = result.Where(r => r.Dates.Select(d => d.Date).Contains(request.StartingDate.Value) && r.Dates.Select(d => d.Date).Contains(request.EndingDate.Value));
+                    result = result.Where(r => r.Dates.Select(d => d.Date).Where(d=> d.Date > request.StartingDate && d.Date < request.EndingDate).Any());
                 }
 
                 if(request.FromTownId != null && request.EndTownId != null)

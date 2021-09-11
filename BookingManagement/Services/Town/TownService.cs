@@ -22,18 +22,19 @@ namespace BookingManagement.Services.Town
             _logger = logger;
         }
 
-        public Task<LoadMoreList<TownResponse>> GetTownsAsync(TownRequest request)
+        public async Task<LoadMoreList<TownResponse>> GetTownsAsync(TownRequest request)
         {
             try
             {
                 var result = _dbContext.Towns.AsNoTracking().Select(x => new TownResponse{ 
+                    Id = x.Id,
                     Country = x.Country,
                     Lat = x.Latitude,
                     Long = x.Longitude,
                     Name = x.Name
-                });
+                }).OrderBy(t => t.Name);
 
-                var listResult = LoadMoreList<TownResponse>.ToLoadMoreListAsync(result, request.CurrentPage, request.ItemsPerPage);
+                var listResult = await LoadMoreList<TownResponse>.ToLoadMoreListAsync(result, request.CurrentPage, request.ItemsPerPage).ConfigureAwait(false);
 
                 return listResult;
             }catch(Exception ex)

@@ -3,6 +3,7 @@ using BookingManagement.Services.Town.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,14 @@ namespace BookingManagement.Controllers
             try
             {
                 var result = await _townService.GetTownsAsync(request).ConfigureAwait(false);
+                var metadata = new
+                {
+                    result.TotalItems,
+                    result.HasNext,
+                    result.Limit,
+                    result.Offset
+                };
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 return Ok(result);
             }
             catch (Exception ex)

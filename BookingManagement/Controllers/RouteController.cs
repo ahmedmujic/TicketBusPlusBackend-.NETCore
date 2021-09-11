@@ -55,7 +55,7 @@ namespace BookingManagement.Controllers
             try
             {
                 request.UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
+                request.Role = User.FindFirst(ClaimTypes.Role)?.Value;
                 var result = await _routeService.GetRoutesAsync(request).ConfigureAwait(false);
                 return Ok(result);
             }

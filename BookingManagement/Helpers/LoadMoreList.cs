@@ -24,7 +24,7 @@ namespace BookingManagement.Helpers
 
         public async static Task<LoadMoreList<T>> ToLoadMoreListAsync(IQueryable<T> source, int currentIndex, int numberOfElements)
         {
-            var itemsCount = source.Count();
+            var itemsCount = await source.CountAsync();
             var items = await source.Skip(currentIndex * numberOfElements).Take(numberOfElements).ToListAsync().ConfigureAwait(false);
             return new LoadMoreList<T>(items, currentIndex, numberOfElements, itemsCount);
         }
