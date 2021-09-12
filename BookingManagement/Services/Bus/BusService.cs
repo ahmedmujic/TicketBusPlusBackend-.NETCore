@@ -46,10 +46,10 @@ namespace BookingManagement.Services.Bus
                     CompanyId = request.UserId
                 };
 
-                List<Seat> seats = new();
+                List<Models.Domain.Seat> seats = new();
                 for (var i = 0; i < request.NumberOfSeats; i++)
                 {
-                    seats.Add(new Seat
+                    seats.Add(new Models.Domain.Seat
                     {
                         Checked = false,
                         SeatCode = Guid.NewGuid().ToString(),

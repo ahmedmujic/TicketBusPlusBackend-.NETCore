@@ -15,5 +15,7 @@ namespace BookingManagement.Services.Town.Interfaces
         Task<AddRouteResponseDTO> AddRouteAsync(AddRouteRequestDTO request);
         Task<IEnumerable<TopSellingResponseDTO>> GetTopSellingRoutesAsync(string userId);
         Task<PaginationListResponse<RouteResponseDTO>> GetRoutesAsync(RoutesRequest request);
+        Task<RouteResponseDTO> GetRouteByIdAsync(string routeId);
+
     }
 }

@@ -66,6 +66,20 @@ namespace BookingManagement.Controllers
             }
         }
 
+        [HttpGet("{routeId}")]
+        public async Task<ActionResult<PaginationListResponse<RouteResponseDTO>>> GetRouteById(string routeId)
+        {
+            try
+            {
+                var result = await _routeService.GetRouteByIdAsync(routeId).ConfigureAwait(false);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GET:/api/route/{id}");
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
 
 
         [HttpGet("top-selling")]

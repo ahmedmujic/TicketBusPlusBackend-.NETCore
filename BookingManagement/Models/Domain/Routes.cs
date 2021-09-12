@@ -17,16 +17,18 @@ namespace BookingManagement.Models.Domain
         
         public int EndStationId { get; set; }
         public Station EndStation { get; set; }
-        public string Duration { get; set; }
 
         public int StartStationId { get; set; }
         public Station StartStation { get; set; }
-        
+
         public int SellCounter { get; set; }
 
         [Column(TypeName = "decimal(18,4)")]
         public decimal Price { get; set; }
-        public ICollection<Dates> Dates { get; set; }
+        public DateTime StartingDate { get; set; }
+        public DateTime EndingDate { get; set; }
 
-    }
+        public double Duration => (EndingDate - StartingDate).TotalSeconds;
+
+}
 }

@@ -38,25 +38,15 @@ namespace BookingManagement.Services.Routes
         {
             try
             {
-                List<Dates> dates = new();
-
-                foreach (var date in request.Dates)
-                    dates.Add(new Dates
-                    {
-                        Date = date
-                    });
-
-                await _dbContext.Dates.AddRangeAsync(dates);
-
                 var routeModel = new Models.Domain.Routes()
                 {
                     Price = request.Price,
                     BusId = request.BusId,
                     StartStationId = request.StartStationId,
                     EndStationId = request.EndStationId,
-                    Dates = dates,
-                    CompandyId = request.CompanyId,
-                    Duration = request.Duration
+                    StartingDate = request.StartingDate,
+                    EndingDate = request.EndingDate,
+                    CompandyId = request.CompanyId                    
                 };               
 
                 await _dbContext.Routes.AddAsync(routeModel);
@@ -70,13 +60,54 @@ namespace BookingManagement.Services.Routes
             }
         }
 
+        public Task<RouteResponseDTO> GetRouteByIdAsync(string routeId)
+        {
+            try
+            {
+                IQueryable<Models.Domain.Routes> result = _dbContext.Routes.AsNoTracking()
+                    .Include(r => r.Bus)
+                    .Include(r => r.EndStation)
+                    .ThenInclude(s => s.Town)
+                    .Include(r => r.StartStation)
+                    .ThenInclude(s => s.Town)
+                    .Where(r=> r.Id == routeId);
+
+                var mainResult = result.Select(r => new RouteResponseDTO
+                {
+                    Id = r.Id,
+                    BusName = r.Bus.Name,
+                    BusId = r.Bus.Id,
+                    StartingDate = r.StartingDate,
+                    EndingDate = r.EndingDate,
+                    Duration = r.Duration,
+                    Price = r.Price,
+                    EndingStation = $"{r.EndStation.Name}, {r.EndStation.Town.Name}",
+                    StartingStation = $"{r.StartStation.Name}, {r.StartStation.Town.Name}",
+                    Sells = r.SellCounter,
+                    StartingTownLat = r.StartStation.Town.Latitude,
+                    StartingTownLong = r.StartStation.Town.Longitude,
+                    EndingTownLat = r.EndStation.Town.Latitude,
+                    EndingTownLong = r.EndStation.Town.Longitude,
+                    StartingTown = r.StartStation.Town.Name,
+                    EndingTown = r.EndStation.Town.Name
+                }).FirstOrDefaultAsync();
+
+
+                return mainResult;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(GetRouteByIdAsync));
+                throw;
+            }
+        }
+
         public async Task<PaginationListResponse<RouteResponseDTO>> GetRoutesAsync(RoutesRequest request)
         {
             try
             {
                 IQueryable<Models.Domain.Routes> result = _dbContext.Routes.AsNoTracking()
                     .Include(r => r.Bus)
-                    .Include(r => r.Dates)
                     .Include(r => r.EndStation)
                     .ThenInclude(s => s.Town)
                     .Include(r => r.StartStation)
@@ -90,7 +121,7 @@ namespace BookingManagement.Services.Routes
 
                 if (request.StartingDate != null && request.EndingDate != null)
                 {
-                    result = result.Where(r => r.Dates.Select(d => d.Date).Where(d=> d.Date > request.StartingDate && d.Date < request.EndingDate).Any());
+                    result = result.Where(r => r.StartingDate >= request.StartingDate && request.StartingDate <= r.EndingDate);
                 }
 
                 if(request.FromTownId != null && request.EndTownId != null)
@@ -101,12 +132,22 @@ namespace BookingManagement.Services.Routes
 
                 var mainResult = result.Select(r => new RouteResponseDTO
                 {
+                    Id = r.Id,
                     BusName = r.Bus.Name,
-                    Dates = r.Dates.Select(d => d.Date),
+                    BusId = r.Bus.Id,
+                    StartingDate = r.StartingDate,
+                    EndingDate = r.EndingDate,
+                    Duration = r.Duration,
                     Price = r.Price,
                     EndingStation = $"{r.EndStation.Name}, {r.EndStation.Town.Name}",
                     StartingStation = $"{r.StartStation.Name}, {r.StartStation.Town.Name}",
-                    Sells = r.SellCounter
+                    Sells = r.SellCounter,
+                    StartingTownLat = r.StartStation.Town.Latitude,
+                    StartingTownLong = r.StartStation.Town.Longitude,
+                    EndingTownLat = r.EndStation.Town.Latitude,
+                    EndingTownLong = r.EndStation.Town.Longitude,
+                    StartingTown = r.StartStation.Town.Name,
+                    EndingTown = r.EndStation.Town.Name
                 });
 
                 /* .Select(r => new RouteResponseDTO

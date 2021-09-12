@@ -4,14 +4,16 @@ using BookingManagement;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BookingManagement.Migrations
 {
     [DbContext(typeof(BookingManagementDbContext))]
-    partial class BookingManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210912160050_addedDefaultValueForIsCancelled")]
+    partial class addedDefaultValueForIsCancelled
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -104,7 +106,7 @@ namespace BookingManagement.Migrations
 
                     b.HasIndex("BusId");
 
-                    b.ToTable("Seats");
+                    b.ToTable("Seat");
                 });
 
             modelBuilder.Entity("BookingManagement.Models.Domain.Station", b =>
@@ -143,7 +145,10 @@ namespace BookingManagement.Migrations
                     b.Property<bool>("IsCanceled")
                         .HasColumnType("bit");
 
-                    b.Property<string>("RouteId")
+                    b.Property<int>("RouteId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RouteId1")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("SeatId")
@@ -154,7 +159,7 @@ namespace BookingManagement.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RouteId");
+                    b.HasIndex("RouteId1");
 
                     b.HasIndex("SeatId")
                         .IsUnique();
@@ -239,7 +244,7 @@ namespace BookingManagement.Migrations
                 {
                     b.HasOne("BookingManagement.Models.Domain.Routes", "Route")
                         .WithMany()
-                        .HasForeignKey("RouteId");
+                        .HasForeignKey("RouteId1");
 
                     b.HasOne("BookingManagement.Models.Domain.Seat", "Seat")
                         .WithOne("Ticket")
