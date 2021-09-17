@@ -9,5 +9,6 @@ namespace NotificationService.Constants
     {
         public const string UserActivation = "UserRegistered";
         public const string ResetPassword = "ResetPassword";
+        public const string InvoiceSend = "InvoiceSend";
     }
 }

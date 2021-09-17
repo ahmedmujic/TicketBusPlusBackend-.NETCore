@@ -1,4 +1,5 @@
-﻿using NotificationService.Events;
+﻿using MimeKit;
+using NotificationService.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,7 @@ namespace NotificationService.Interfaces
 {
     public interface IMailService
     {
-        Task<bool> SendEmailAsync(UserRegistered to, string subject, string body, bool isHtml, string fullName);
+        Task<bool> SendEmailAsync(string emailBody, string reciever, string subject);
+        Task<bool> SendEmailAsync(BodyBuilder body, string reciever, string subject);
     }
 }

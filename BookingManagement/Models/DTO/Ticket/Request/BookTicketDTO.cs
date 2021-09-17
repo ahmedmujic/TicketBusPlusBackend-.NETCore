@@ -9,8 +9,12 @@ namespace BookingManagement.Models.DTO.Ticket.Request
     public class BookTicketDTO
     {
         public  string RouteId { get; set; }
-        public int SeatId { get; set; }
+        public List<int> Seats { get; set; }
+        public List<string> SeatNumbers { get; set; }
+        public decimal Amount { get; set; }
         [JsonIgnore]
         public string UserId { get; set; }
+        [JsonIgnore]
+        public string Email { get; set; }
     }
 }

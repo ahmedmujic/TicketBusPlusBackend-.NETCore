@@ -29,28 +29,17 @@ namespace NotificationService.Services
             _mail.From.Add(new MailboxAddress(_emailSettings.Value.FromName, _emailSettings.Value.From));
         }
 
-        private string GetHtmlTemplate(string subject, string FirstName, string link)
-        {
-            return subject switch
-            {
-                EmailConstants.UserActivation => EmailHtml.EmailActivation(FirstName, link),
-                EmailConstants.ResetPassword => EmailHtml.ResetPassword(FirstName, link),
-                _ => throw new Exception("Email subject is not supported"),
-            };
-        }
+       
 
-        public async Task<bool> SendEmailAsync(UserRegistered to, string subject, string body, bool isHTML = false, string fullName = null)
-        {
-            _mail.To.Add(new MailboxAddress("Reciever", to.Email));
-            _mail.Subject = subject;           
-
-            if (isHTML)
-                _mail.Body = new TextPart(TextFormat.Html) { Text = GetHtmlTemplate(subject, to.FirstName, to.ConfrimationLink) };
-            else
-                _mail.Body = new TextPart(TextFormat.Plain) { Text = body };
+        public async Task<bool> SendEmailAsync(string emailBody, string reciever, string subject)
+        {          
 
             try
             {
+                _mail.To.Add(new MailboxAddress("Reciever", reciever));
+                _mail.Subject = subject;
+
+                _mail.Body = new TextPart(TextFormat.Html) { Text = emailBody };
                 using (var client = new MailKit.Net.Smtp.SmtpClient())
                 {
                     await client.ConnectAsync("smtp.gmail.com", 587, false);
@@ -67,5 +56,30 @@ namespace NotificationService.Services
             }
         }
 
+
+        public async Task<bool> SendEmailAsync(BodyBuilder body, string reciever, string subject)
+        {
+            try
+            {
+                _mail.Body = body.ToMessageBody();
+
+                _mail.To.Add(new MailboxAddress("Reciever", reciever));
+                _mail.Subject = subject;
+
+                using (var client = new MailKit.Net.Smtp.SmtpClient())
+                {
+                    await client.ConnectAsync("smtp.gmail.com", 587, false);
+                    await client.AuthenticateAsync(_emailSettings.Value.From, Environment.GetEnvironmentVariable("email_password"));
+                    await client.SendAsync(_mail);
+                    await client.DisconnectAsync(true);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(SendEmailAsync));
+                return false;
+            }
+        }
     }
 }

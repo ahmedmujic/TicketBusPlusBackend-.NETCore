@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="DinkToPdf" Version="1.0.8" />
     <PackageReference Include="MailKit" Version="2.13.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.14" />
     <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
@@ -24,7 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Messaging\Messaging.csproj" />
-    <ProjectReference Include="..\TicketService.API\TicketService.API.csproj" />
   </ItemGroup>
 
 </Project>

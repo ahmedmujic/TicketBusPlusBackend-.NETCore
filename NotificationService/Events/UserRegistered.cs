@@ -19,5 +19,5 @@ namespace NotificationService.Events
             Email = email;
             ConfrimationLink = confirmationLink;
         }
-    }
+    } 
 }

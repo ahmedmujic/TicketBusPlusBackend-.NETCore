@@ -8,6 +8,8 @@ using Messaging.Configuration;
 using NotificationService.Interfaces;
 using NotificationService.Services;
 using NotificationService.Helpers;
+using DinkToPdf.Contracts;
+using DinkToPdf;
 
 namespace NotificationService
 {
@@ -26,7 +28,9 @@ namespace NotificationService
 
             services.AddControllers();
             services.UseRabbitMQMessageHandler(Configuration);
-            services.AddSingleton<IMailService, MailService>();
+            services.AddTransient<IMailService, MailService>();
+            services.AddSingleton<IFileService, FileService>();
+            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
             services.AddHostedService<NotificationManager>();
             services.AddSwaggerGen(c =>
             {

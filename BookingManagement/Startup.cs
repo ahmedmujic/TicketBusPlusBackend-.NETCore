@@ -60,7 +60,7 @@ namespace BookingManagement
             services.AddDbContext<BookingManagementDbContext>(options =>
              options.UseSqlServer(Configuration.GetConnectionString("DineroDbContext")));
 
-            services.AddServices();
+            services.AddServices(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

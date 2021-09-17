@@ -33,6 +33,7 @@ namespace BookingManagement.Controllers
             try
             {
                 request.UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                request.Email = User.FindFirst(ClaimTypes.Email)?.Value;
                 var result = await  _ticketService.BookTicketAsync(request);
 
                 if (result)

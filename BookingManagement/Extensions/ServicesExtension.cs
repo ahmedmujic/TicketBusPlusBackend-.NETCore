@@ -10,7 +10,9 @@ using BookingManagement.Services.Ticket;
 using BookingManagement.Services.Ticket.Interface;
 using BookingManagement.Services.Town;
 using BookingManagement.Services.Town.Interfaces;
+using Messaging.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -19,15 +21,15 @@ namespace BookingManagement.Extensions
     public static class ServicesExtension
     {
 
-        public static IServiceCollection AddServices(this IServiceCollection services)
+        public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration config)
         {
-           
+            services.UseRabbitMQMessagePublisher(config);
 
             services.AddScoped<ITownService, TownService>();
             services.AddScoped<IBusService, BusService>();
             services.AddScoped<IStationService, StationService>();
             services.AddScoped<IRouteService, RouteService>();
-            services.AddScoped<ITicketService, TicketService>();
+            services.AddScoped<ITicketService, Services.Ticket.TicketService>();
             services.AddScoped<ISeatService, SeatService>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
