@@ -30,8 +30,7 @@ namespace NotificationService.Services
                     Orientation = Orientation.Portrait,
                     PaperSize = PaperKind.A4,
                     Margins = new MarginSettings { Top = 10 },
-                    DocumentTitle = "PDF Report",
-                    Out = @"D:\PDFCreator\Employee_Report.pdf"
+                    DocumentTitle = "PDF Report"
                 };
                 var objectSettings = new ObjectSettings
                 {
@@ -39,7 +38,7 @@ namespace NotificationService.Services
                     HtmlContent = body,
                     WebSettings = { DefaultEncoding = "utf-8"},
                     HeaderSettings = { FontName = "Arial", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
-                    FooterSettings = { FontName = "Arial", FontSize = 9, Line = true, Center = "Report Footer" }
+                    FooterSettings = { FontName = "Arial", FontSize = 9, Line = true, Center = DateTime.Now.ToString() }
                 };
                 var pdf = new HtmlToPdfDocument()
                 {

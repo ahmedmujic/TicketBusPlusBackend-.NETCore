@@ -34,6 +34,8 @@ namespace BookingManagement.Services.Routes
             _mapper = mapper;
         }
 
+        public async Task<TimeStatDataResponseDTO>
+
         public async Task<AddRouteResponseDTO> AddRouteAsync(AddRouteRequestDTO request)
         {
             try

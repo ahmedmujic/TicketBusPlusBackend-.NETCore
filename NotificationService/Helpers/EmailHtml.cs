@@ -40,14 +40,16 @@ namespace NotificationService.Helpers
                 TextBody = "Your invoice is ready.",
             };
 
-            body.Attachments.Add("CsvErrors.xlsx", attachment);
+            body.Attachments.Add("Invoicee.pdf", attachment);
             return body;
         }
 
         public static string InvoiceHtml(InvoiceSend invoice)
         {
+            double total = 0.0;
             StringBuilder seatsTable = new StringBuilder();
             foreach (var seat in invoice.SeatNumbers) {
+                total = total + double.Parse(invoice.Amount);
                 seatsTable.Append(
                 @" <tr style='height: 18px'>
                 <td style='width: 143.344px; text-align: center; height: 18px'>
@@ -59,91 +61,61 @@ namespace NotificationService.Helpers
               </tr>");
             }
             return @"
-                   <div>
-  <div>
-    <div>
-      <div>
-        <div
-          style='
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-          '
-        >
-          <h1>INVOICE</h1>
-          <div style='display: flex; flex-direction: column'>
-            <span style='display: flex; flex-direction: column'>
-              Ticket Bus Plus Zenica</span
-            ><span style='display: flex; flex-direction: column'>
-              Bosnia and Herzegovina
-            </span>
-          </div>
-        </div>
-        <div>
-          <div>&nbsp;</div>
-          <div><hr /></div>
-          <div>
-            <table
-              style='
-                height: 36px;
-                width: 100%;
-                border-collapse: collapse;
-                border: none;
-                margin-left: auto;
-                margin-right: auto;
-              '
-              border='0'
-            >
-              <tbody>
-                <tr style='height: 18px'>
-                  <td style='width: 33.3333%; height: 18px'>
-                    <strong>DATE</strong>
-                  </td>
-                  <td style='width: 33.3333%; height: 18px'>
-                    <strong>INVOICE ID</strong>
-                  </td>
-                  <td style='width: 33.3333%; height: 18px'>
-                    <strong>TO</strong>
-                  </td>
-                </tr>
-                <tr style='height: 18px'>
-                  <td style='width: 33.3333%; height: 18px'>" + DateTime.Now + @"</td>
-                  <td style='width: 33.3333%; height: 18px'>" + new Guid() + @"</td>
-                  <td style='width: 33.3333%; height: 18px'> " + invoice.Email + @"</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div>&nbsp;</div>
-          <div>&nbsp;</div>
-        </div>
-      </div>
-    </div>
-    <!-- end: Invoice header-->
-    <!-- begin: Invoice body-->
-    <div>
-      <div>
-        <div>
-          <table>
-            <thead>
-              <tr style='height: 18px'>
-                <th>Description</th>
-                <th style='width: 535.656px; text-align: center; height: 18px'>
-                  Amount
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              " + seatsTable.ToString() + @"
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
+<div>
+<div>
+<div>
+<div>
+<div style='display: flex; justify-content: space-between; align-items: center;'>
+<h1>INVOICE</h1>
+<div style='display: flex; flex-direction: column;'>
+<p style='display: flex; flex-direction: column;'>Ticket Bus Plus Zenica&lt;/p &gt;</p>
+<p style='display: flex; flex-direction: column;'>Bosnia and Herzegovina</p>
 </div>
-<p>
-</p>
+</div>
+<div>
+<div>&nbsp;</div>
+<div><hr /></div>
+<div>
+<table style='height: 36px; width: 100%; border-collapse: collapse; border: none; margin-left: auto; margin-right: auto;' border='0'>
+<tbody>
+<tr style='height: 18px;'>
+<td style='width: 33.3333%; height: 18px;'><strong>DATE</strong></td>
+<td style='width: 33.3333%; height: 18px;'><strong>INVOICE ID</strong></td>
+<td style='width: 33.3333%; height: 18px;'><strong>TO</strong></td>
+</tr>
+<tr style='height: 18px;'>
+<td style='width: 33.3333%; height: 18px;'>" + DateTime.Now + @"</td>
+<td style='width: 33.3333%; height: 18px;'>" + Guid.NewGuid().ToString() + @"</td>
+<td style='width: 33.3333%; height: 18px;'>" + invoice.Email + @"</td>
+</tr>
+
+</tbody>
+</table>
+</div>
+<div>&nbsp;</div>
+<div><hr /></div>
+</div>
+</div>
+</div>
+<div style='width: 100%;'>
+<div style='width: 100%;'>
+
+<table style='height: 18px; width: 100%; border-collapse: collapse; border: none; margin-left: auto; margin-right: auto;' border='0'>
+<thead>
+<tr style='height: 18px;'>
+<th style='height: 18px; width: 52.2727%;'>Seat number</th>
+<th style='width: 47.5852%; text-align: center; height: 18px;'>Amount</th>
+</tr>
+" + seatsTable.ToString() + @"
+</thead>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<hr />
+<div style='width: 100%; display: flex; justify-content-end: end;'><strong>Total: $ "+  total  + @"</strong></div>
 ";
         }
 

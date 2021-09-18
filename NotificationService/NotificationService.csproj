@@ -11,6 +11,10 @@
     <Content Remove="Controllers\**" />
     <EmbeddedResource Remove="Controllers\**" />
     <None Remove="Controllers\**" />
+	 <None Remove="libwkhtmltox.dll" />
+	<EmbeddedResource Include="libwkhtmltox.dll">
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

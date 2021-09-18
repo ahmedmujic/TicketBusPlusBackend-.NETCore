@@ -33,6 +33,7 @@ namespace BookingManagement.Services.Ticket
         {
             try
             {
+                var route = _dbContext.Routes.FirstOrDefault(r => r.Id == request.RouteId);
                 List<Tickets> tickets = new List<Tickets>();
                 foreach(var seat in request.Seats)
                 {
@@ -45,12 +46,17 @@ namespace BookingManagement.Services.Ticket
                         UserId = request.UserId                        
                     };
 
+                    route.SellCounter++;
                     tickets.Add(ticket);
                 }
                 var array = tickets.Select(x => x.SeatId).ToArray();
 
                 _dbContext.Database.ExecuteSqlRaw($"UPDATE [Seats] SET [Checked] = 'True' WHERE [Id] IN ({string.Join(", ", array)})");
                 await _dbContext.Tickets.AddRangeAsync(tickets);
+
+                
+               
+
                 var isSucessful =  await _dbContext.SaveChangesAsync() >= 0;
                 if (isSucessful)
                 {
