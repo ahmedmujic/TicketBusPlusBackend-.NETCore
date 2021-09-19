@@ -34,7 +34,32 @@ namespace BookingManagement.Services.Routes
             _mapper = mapper;
         }
 
-        public async Task<TimeStatDataResponseDTO>
+        public async Task<TimeStatDataResponseDTO> GetRouteStatsAsync(string userId)
+        {
+            try
+            {
+
+                var result = await _dbContext.Routes.AsNoTracking()
+                    .Where(r => r.CompandyId == userId)
+                    .Select( _ => {
+                        return new TimeStatDataResponseDTO
+                        {
+                            LastMonthIncome = _dbContext.Routes.Where(r => r.EndingDate.Month == DateTime.Now.Month - 1).Select(r => r.SellCounter * r.Price).First(),
+                            LastYearIncome =  _dbContext.Routes.Where(r => r.EndingDate.Year == DateTime.Now.Year - 1).Select(r => r.SellCounter * r.Price).First(),
+                            Income =  _dbContext.Routes.Select(r => r.SellCounter * r.Price).First(),
+                        };
+                    }
+                   ).FirstOrDefaultAsync();                 
+
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(AddRouteAsync));
+                throw;
+            }
+        }
 
         public async Task<AddRouteResponseDTO> AddRouteAsync(AddRouteRequestDTO request)
         {
