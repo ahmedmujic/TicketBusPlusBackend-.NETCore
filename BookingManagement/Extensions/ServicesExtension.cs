@@ -1,4 +1,6 @@
 ﻿
+using BookingManagement.Services.Analytics;
+using BookingManagement.Services.Analytics.Interface;
 using BookingManagement.Services.Bus;
 using BookingManagement.Services.Bus.Interface;
 using BookingManagement.Services.Routes;
@@ -31,6 +33,7 @@ namespace BookingManagement.Extensions
             services.AddScoped<IRouteService, RouteService>();
             services.AddScoped<ITicketService, Services.Ticket.TicketService>();
             services.AddScoped<ISeatService, SeatService>();
+            services.AddScoped<IAnalyticsService, AnalyticsService>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             return services;
