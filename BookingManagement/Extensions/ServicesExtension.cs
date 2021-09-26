@@ -3,6 +3,8 @@ using BookingManagement.Services.Analytics;
 using BookingManagement.Services.Analytics.Interface;
 using BookingManagement.Services.Bus;
 using BookingManagement.Services.Bus.Interface;
+using BookingManagement.Services.Info;
+using BookingManagement.Services.Info.Interface;
 using BookingManagement.Services.Routes;
 using BookingManagement.Services.Seat;
 using BookingManagement.Services.Seat.Interface;
@@ -34,6 +36,7 @@ namespace BookingManagement.Extensions
             services.AddScoped<ITicketService, Services.Ticket.TicketService>();
             services.AddScoped<ISeatService, SeatService>();
             services.AddScoped<IAnalyticsService, AnalyticsService>();
+            services.AddScoped<IInfoService, InfoService>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             return services;

@@ -7,9 +7,9 @@ namespace BookingManagement.Models.DTO.Route.Response
 {
     public class TimeStatDataResponseDTO
     {
-        public decimal Income { get; set; }
-        public decimal LastMonthIncome { get; set; }
-        public decimal LastYearIncome { get; set; }
+        public decimal? Income { get; set; }
+        public decimal? LastMonthIncome { get; set; }
+        public decimal? LastYearIncome { get; set; }
 
     }
 }

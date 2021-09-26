@@ -13,21 +13,14 @@ namespace BookingManagement.Models.Bulk
             ColumnMappings = SetColumnMappings();
             DataTable = SetDataTableColumns();
             MapToDataTable(entities);
-
         }
 
         public DataTable DataTable { get; private set; }
-
         public string ConnectionString { get; set; }
-
         public string DestinationTable { get; set; }
-
         public int BatchSize { get; set; }
-
         public Dictionary<string, string> ColumnMappings { get; private set; }
-
         protected abstract void MapToDataTable(IEnumerable<TEntity> entities);
-
         private Dictionary<string, string> SetColumnMappings()
         {
             Dictionary<string, string> columnMappings = new();
@@ -39,7 +32,6 @@ namespace BookingManagement.Models.Bulk
 
             return columnMappings;
         }
-
         private DataTable SetDataTableColumns()
         {
             DataTable dataTable = new();

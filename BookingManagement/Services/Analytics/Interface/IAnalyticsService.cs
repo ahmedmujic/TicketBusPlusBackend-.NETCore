@@ -10,8 +10,8 @@ namespace BookingManagement.Services.Analytics.Interface
     public interface IAnalyticsService
     {
 
-        Task<List<TimeStatDataResponseDTO>> GetRouteStatsAsync(string userId);
+        Task<TimeStatDataResponseDTO> GetRouteStatsAsync(string userId);
         Task<List<GetRouteCountriesDTO>> GetCountriesAsync(string userId);
-        Task<List<MonthAnalyticsDTO>> GetMonthAnalytics(string userId);
+        Task<List<MonthAnalyticsDTO>> GetMonthAnalyticsAsync(string userId);
     }
 }

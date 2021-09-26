@@ -33,16 +33,19 @@ namespace BookingManagement.Services.Analytics
 
                 var result = await _dbContext.Routes.AsNoTracking()
                     .Include(r => r.EndStation)
-                    .Where(r => r.CompandyId == userId)
-                    .Take(10)
+                    .ThenInclude(r => r.Town)
+                    .Where(r => r.CompandyId == userId )
+                    .GroupBy(r => new {
+                        Country = r.EndStation.Town.Country
+                    })
                     .Select(r => new GetRouteCountriesDTO
                     {
-                        CountryName = r.EndStation.Town.Country,
-                        Income = _dbContext.Routes.AsNoTracking().Where(t => t.EndStation.Town.Country == r.EndStation.Town.Country).Sum(r => r.SellCounter * r.Price)
+                        CountryName = r.Key.Country,
+                        Income = r.Sum(r => r.Price * r.SellCounter)
                     })
-                    .Distinct()
+                    .OrderBy(r => r.Income)
+                    .Take(5)
                     .ToListAsync();
-
 
                 return result;
             }
@@ -53,48 +56,44 @@ namespace BookingManagement.Services.Analytics
             }
         }
 
-        public async Task<List<MonthAnalyticsDTO>> GetMonthAnalytics(string userId)
+        public async Task<List<MonthAnalyticsDTO>> GetMonthAnalyticsAsync(string userId)
         {
             try
             {
 
                 var result = await _dbContext.Routes.AsNoTracking()
-                    .Where(r => r.CompandyId == userId)
+                    .Where(r => r.CompandyId == userId && r.StartingDate.Year == DateTime.Now.Year)
                     .GroupBy(r => new {
-                        StartingDate = r.StartingDate,
-                        Income = r.Price * r.SellCounter
+                        StartingDate = r.StartingDate.Month
                     })
                     .Select(r => new MonthAnalyticsDTO
                     {
-                        Date = r.Key.StartingDate,
-                        Income = r.Key.Income
-                    })
-                    .OrderBy(r => r.Date)
+                        Month = r.Key.StartingDate,
+                        Income = r.Sum(r => r.Price * r.SellCounter)
+                    })                    
+                    .OrderBy(r => r.Month)
                     .ToListAsync();
 
                 return result;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(GetMonthAnalytics));
+                _logger.LogError(ex, nameof(GetMonthAnalyticsAsync));
                 throw;
             }
         }
 
-        public async Task<List<TimeStatDataResponseDTO>> GetRouteStatsAsync(string userId)
+        public async Task<TimeStatDataResponseDTO> GetRouteStatsAsync(string userId)
         {
             try
             {
 
-                var result = await _dbContext.Routes.AsNoTracking()
-                    .Where(r => r.CompandyId == userId)
-                    .Select(_ => new TimeStatDataResponseDTO
-                    {
-                        LastMonthIncome = _dbContext.Routes.Where(r => r.StartingDate.Month == DateTime.Now.Month - 1).Select(r => r.SellCounter * r.Price).First(),
-                        LastYearIncome = _dbContext.Routes.Where(r => r.StartingDate.Year == DateTime.Now.Year - 1).Select(r => r.SellCounter * r.Price).First(),
-                        Income = _dbContext.Routes.Select(r => r.SellCounter * r.Price).First(),
-                    }).ToListAsync();
-
+                var result = new TimeStatDataResponseDTO
+                {
+                    LastMonthIncome = await _dbContext.Routes.Where(r => r.StartingDate.Month == DateTime.Now.Month - 1).SumAsync(r => r.SellCounter * r.Price),
+                    LastYearIncome = await _dbContext.Routes.Where(r => r.StartingDate.Year == DateTime.Now.Year - 1).SumAsync(r => r.SellCounter * r.Price),
+                    Income = await _dbContext.Routes.SumAsync(r => r.SellCounter * r.Price)
+                };
 
                 return result;
             }

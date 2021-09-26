@@ -10,6 +10,13 @@ namespace NotificationService.Helpers
 {
     public static class EmailHtml
     {
+        public static string InfoSend(InfoSend info)
+        {
+            return @"
+                    <div><p>Hi, " + info.FullName + @" sent you a message</p>
+                        <p>" + info.Message + @"</p>
+                        <p> Phone number: " + info.PhoneNumber + @" </p>";
+        }
         public static string EmailActivation(string FirstName, string activationLink)
         {
             return @"

@@ -63,6 +63,9 @@ namespace NotificationService
                     case MessageTypes.InvoiceSend:
                         await HandleEmailAsync(messageObject.ToObject<InvoiceSend>(), EmailConstants.InvoiceSend);
                         break;
+                    case MessageTypes.InfoSend:
+                        await HandleEmailAsync(messageObject.ToObject<InfoSend>(), EmailConstants.InfoSend);
+                        break;
                     default:
                         _logger.LogInformation(nameof(HandleMessageAsync) + "Invalid messageType");
                         break;
@@ -84,6 +87,7 @@ namespace NotificationService
                     {
                         EmailConstants.UserActivation => EmailHtml.EmailActivation(ur.FirstName, ur.ConfrimationLink),
                         EmailConstants.ResetPassword => EmailHtml.ResetPassword(ur.FirstName, ur.ConfrimationLink),
+                        EmailConstants.InfoSend => EmailHtml.InfoSend((InfoSend)ur),
                         _ => null,
                     };
 

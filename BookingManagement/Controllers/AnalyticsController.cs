@@ -45,5 +45,41 @@ namespace BookingManagement.Controllers
             }
         }
 
+        [HttpGet("country-stats")]
+        public async Task<ActionResult> GetCountryStats()
+        {
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                var result = await _analyticsService.GetCountriesAsync(userId);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "POST:/api/Analytics/country-stats");
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpGet("monthly-stats")]
+        public async Task<ActionResult> GetMonthlyStats()
+        {
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                var result = await _analyticsService.GetMonthAnalyticsAsync(userId);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "POST:/api/Analytics/country-stats");
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
     }
 }

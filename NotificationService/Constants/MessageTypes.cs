@@ -10,5 +10,6 @@ namespace NotificationService.Constants
         public const string UserRegistered = "UserRegistered";
         public const string ResetPassword = "ResetPassword";
         public const string InvoiceSend = "InvoiceSend";
+        public const string InfoSend = "Info";
     }
 }
