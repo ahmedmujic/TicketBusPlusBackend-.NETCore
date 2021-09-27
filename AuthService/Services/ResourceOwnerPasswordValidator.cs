@@ -45,8 +45,9 @@ namespace AuthService.Services
 
                             List<Claim> userClaims = (await _identityUserService.GetClaimsAsync(user)
                                                                                     .ConfigureAwait(false)).ToList();
-                            //Add role claims for role authorization
-                            foreach (var role in await _identityUserService.GetRolesAsync(user).ConfigureAwait(false))
+                        //Add role claims for role authorization
+                        var roles = await _identityUserService.GetRolesAsync(user).ConfigureAwait(false);
+                            foreach (var role in roles)
                                 userClaims.Add(new Claim(JwtClaimTypes.Role, role));
 
                             context.Result = new GrantValidationResult(

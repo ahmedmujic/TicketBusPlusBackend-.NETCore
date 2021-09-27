@@ -16,6 +16,7 @@ using AuthService.Models.Dto.Response;
 using UserInfoResponseDTO = AuthService.Models.Dto.Response.UserInfoResponseDTO;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using IdentityModel;
 
 namespace AuthService.Controllers
 {

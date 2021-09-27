@@ -24,8 +24,7 @@ namespace NotificationService.Helpers
                         <p>To complete your registration, please verify your email:</p>
                         <a href='" + activationLink + @"' style='margin-top: 20px''></p>
                           Verify
-                          </a>
-                        <p> Thank you, The DiNero Team </p>";
+                          </a></div>";
         }
 
         public static string ResetPassword(string FirstName, string link)
@@ -75,7 +74,7 @@ namespace NotificationService.Helpers
 <div style='display: flex; justify-content: space-between; align-items: center;'>
 <h1>INVOICE</h1>
 <div style='display: flex; flex-direction: column;'>
-<p style='display: flex; flex-direction: column;'>Ticket Bus Plus Zenica&lt;/p &gt;</p>
+<p style='display: flex; flex-direction: column;'>Ticket Bus Plus Zenica</p>
 <p style='display: flex; flex-direction: column;'>Bosnia and Herzegovina</p>
 </div>
 </div>
