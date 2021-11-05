@@ -72,6 +72,7 @@ namespace AuthService.Controllers
         {
             try
             {
+                //_logger.LogError("test", "GET:/user");
                 var token = Request.Headers.Values;
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 var role = User.FindFirst(ClaimTypes.Role)?.Value;

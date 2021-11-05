@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BookingManagement.Models.Domain;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -44,4 +45,6 @@ namespace BookingManagement.Models.Bulk
             return dataTable;
         }
     }
+
+   
 }
