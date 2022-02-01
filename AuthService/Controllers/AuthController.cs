@@ -67,6 +67,12 @@ namespace AuthService.Controllers
             }
         }
 
+        [HttpGet("dummy")]
+        public async Task<ActionResult<UserInfoResponseDTO>> GetDummy()
+        {
+            return null;
+        }
+
         [HttpGet("user")]
         public async Task<ActionResult<UserInfoResponseDTO>> GetUserInfo()
         {
